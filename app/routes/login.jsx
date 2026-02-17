@@ -1,7 +1,7 @@
-import {Form, useActionData, useNavigation, useSearchParams} from 'react-router';
-import {redirect} from 'react-router';
+import { Form, useActionData, useNavigation, useSearchParams } from 'react-router';
+import { redirect } from 'react-router';
 
-export async function loader({context, request}) {
+export async function loader({ context, request }) {
   if (await context.customerAccount.isLoggedIn()) {
     const url = new URL(request.url);
     const returnTo = url.searchParams.get('return_to');
@@ -10,7 +10,7 @@ export async function loader({context, request}) {
   return null;
 }
 
-export async function action({context, request}) {
+export async function action({ context, request }) {
   const formData = await request.formData();
   const intent = formData.get('intent');
 
@@ -20,24 +20,33 @@ export async function action({context, request}) {
       const email = formData.get('email');
 
       // 🚀 IMPORTANT: return directly, do NOT append cookies
-      return await context.customerAccount.login({
+      // 🚀 IMPORTANT: return directly, do NOT append cookies
+      const response = await context.customerAccount.login({
         returnTo: returnTo || '/account',
         loginHint: email || undefined,
       });
+
+      response.headers.append('Set-Cookie', await context.session.commit());
+
+      return response;
     }
 
     if (intent === 'signup') {
       const returnTo = formData.get('return_to');
 
-      return await context.customerAccount.login({
+      const response = await context.customerAccount.login({
         returnTo: returnTo || '/account',
       });
+
+      response.headers.append('Set-Cookie', await context.session.commit());
+
+      return response;
     }
 
     throw new Error('Invalid intent');
   } catch (error) {
     console.error('Auth error:', error);
-    return {error: 'Authentication failed'};
+    return { error: 'Authentication failed' };
   }
 }
 
