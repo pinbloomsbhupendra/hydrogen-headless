@@ -1,10 +1,6 @@
 import {Form, useActionData, useNavigation, useSearchParams} from 'react-router';
 import {redirect} from 'react-router';
 
-/**
- * Loader:
- * If already logged in, redirect to /account
- */
 export async function loader({context, request}) {
   if (await context.customerAccount.isLoggedIn()) {
     const url = new URL(request.url);
@@ -14,59 +10,37 @@ export async function loader({context, request}) {
   return null;
 }
 
-/**
- * Action:
- * Handles login & signup using Customer Account API
- */
 export async function action({context, request}) {
   const formData = await request.formData();
   const intent = formData.get('intent');
 
   try {
-    let response;
-
     if (intent === 'login') {
       const returnTo = formData.get('return_to');
       const email = formData.get('email');
 
-      response = await context.customerAccount.login({
+      // 🚀 IMPORTANT: return directly, do NOT append cookies
+      return await context.customerAccount.login({
         returnTo: returnTo || '/account',
         loginHint: email || undefined,
       });
-    } else if (intent === 'signup') {
+    }
+
+    if (intent === 'signup') {
       const returnTo = formData.get('return_to');
 
-      response = await context.customerAccount.login({
+      return await context.customerAccount.login({
         returnTo: returnTo || '/account',
       });
-    } else {
-      throw new Error('Invalid intent');
     }
 
-    if (!response) {
-      throw new Error('Login response is undefined');
-    }
-
-    // Persist session cookies
-    const setCookieHeader = await context.session.commit();
-    response.headers.append('Set-Cookie', setCookieHeader);
-
-    return response;
+    throw new Error('Invalid intent');
   } catch (error) {
     console.error('Auth error:', error);
-
-    let errorMessage = 'Authentication failed';
-    if (error instanceof Error) {
-      errorMessage = `${error.name}: ${error.message}`;
-    }
-
-    return {error: errorMessage};
+    return {error: 'Authentication failed'};
   }
 }
 
-/**
- * Login Page UI
- */
 export default function Login() {
   const actionData = useActionData();
   const navigation = useNavigation();
@@ -79,7 +53,6 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-[#b3b3b3] flex items-center justify-center py-12 px-4">
       <div className="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 shadow-2xl rounded-3xl overflow-hidden bg-white">
-        {/* LOGIN SECTION */}
         <div className="p-12 flex flex-col justify-center">
           <h2 className="text-sm font-black uppercase tracking-[0.2em] text-red-600 mb-2 italic">
             Existing Member
@@ -116,7 +89,6 @@ export default function Login() {
           )}
         </div>
 
-        {/* SIGNUP SECTION */}
         <div className="bg-[#1a1a1a] p-12 flex flex-col justify-center text-white">
           <h2 className="text-sm font-black uppercase tracking-[0.2em] text-red-500 mb-2 italic">
             New Here?
