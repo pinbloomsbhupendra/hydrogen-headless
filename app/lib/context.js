@@ -33,8 +33,8 @@ export async function createAppLoadContext(request, env, executionContext) {
   const customerAccount = createCustomerAccountClient({
     request,
     session,
-    clientId: env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID, // ✅ correct key
-    customerAccountApiUrl: env.PUBLIC_CUSTOMER_ACCOUNT_API_URL, // ✅ required
+    clientId: env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID,
+    customerAccountApiUrl: env.PUBLIC_CUSTOMER_ACCOUNT_API_URL,
   });
 
   return {
