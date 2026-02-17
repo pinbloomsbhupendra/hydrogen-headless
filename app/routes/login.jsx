@@ -81,7 +81,7 @@ export default function Login() {
             SIGN IN
           </h1>
 
-          <Form method="post" className="space-y-6">
+          <Form method="post" action="/login" className="space-y-6">
             <input type="hidden" name="intent" value="login" />
             {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
 
@@ -106,14 +106,6 @@ export default function Login() {
             <div className="mt-4 bg-red-50 border-2 border-red-600 p-4 rounded text-center">
               <p className="text-red-900 font-bold text-lg mb-2">Login Failed</p>
               <p className="text-red-700 font-mono text-sm break-words">{error}</p>
-              {debugInfo && (
-                <div className="mt-4 text-left bg-gray-100 p-2 rounded text-xs font-mono overflow-auto">
-                  <p><strong>Client ID:</strong> {debugInfo.clientId}</p>
-                  <p><strong>API URL:</strong> {debugInfo.apiUrl}</p>
-                  <p><strong>Stack:</strong></p>
-                  <pre className="whitespace-pre-wrap">{debugInfo.errorStack}</pre>
-                </div>
-              )}
             </div>
           )}
         </div>
