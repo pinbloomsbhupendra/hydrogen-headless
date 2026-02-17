@@ -1,5 +1,4 @@
 import { Form, useActionData, useNavigation, useSearchParams } from 'react-router';
-import { redirect } from 'react-router';
 
 /**
  * Loader:
