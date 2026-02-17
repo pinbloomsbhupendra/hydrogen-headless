@@ -48,11 +48,15 @@ export async function action({ context, request }) {
       throw error;
     }
     console.error('Auth error full:', error);
-    if (error instanceof Error) {
-      console.error('Auth error message:', error.message);
-      console.error('Auth error stack:', error.stack);
-    }
-    return { error: `Authentication failed: ${error.message || 'Unknown error'}` };
+
+    return {
+      error: `Authentication failed: ${error.message || 'Unknown error'}`,
+      debugInfo: {
+        clientId: context.env?.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID || 'MISSING',
+        apiUrl: context.env?.PUBLIC_CUSTOMER_ACCOUNT_API_URL || 'MISSING',
+        errorStack: error.stack
+      }
+    };
   }
 }
 
@@ -64,6 +68,7 @@ export default function Login() {
   const returnTo = searchParams.get('return_to');
   const isSubmitting = navigation.state === 'submitting';
   const error = actionData?.error;
+  const debugInfo = actionData?.debugInfo;
 
   return (
     <div className="min-h-screen bg-[#b3b3b3] flex items-center justify-center py-12 px-4">
@@ -101,6 +106,14 @@ export default function Login() {
             <div className="mt-4 bg-red-50 border-2 border-red-600 p-4 rounded text-center">
               <p className="text-red-900 font-bold text-lg mb-2">Login Failed</p>
               <p className="text-red-700 font-mono text-sm break-words">{error}</p>
+              {debugInfo && (
+                <div className="mt-4 text-left bg-gray-100 p-2 rounded text-xs font-mono overflow-auto">
+                  <p><strong>Client ID:</strong> {debugInfo.clientId}</p>
+                  <p><strong>API URL:</strong> {debugInfo.apiUrl}</p>
+                  <p><strong>Stack:</strong></p>
+                  <pre className="whitespace-pre-wrap">{debugInfo.errorStack}</pre>
+                </div>
+              )}
             </div>
           )}
         </div>
