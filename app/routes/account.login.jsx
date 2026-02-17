@@ -1,2 +1,4 @@
-import { redirect } from 'react-router';
-export async function loader() { return redirect('/login'); }
+export async function loader({context}) {
+  // Start Shopify Customer Account OAuth login flow
+  return context.customerAccount.login();
+}
