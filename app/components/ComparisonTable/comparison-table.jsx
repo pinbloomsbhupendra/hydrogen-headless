@@ -15,7 +15,7 @@ const ComparisonTable = () => {
                 {/* Left Column: PROLOCK */}
                 <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col items-center relative bg-white border-b border-gray-200 md:border-b-0 md:border-r">
                     <img src="/prolock.png" alt="Prolock" className="h-32 md:h-40 object-contain mb-8" />
-                    <h2 className="text-3xl font-black uppercase mb-10 tracking-wider text-center flex items-center justify-center min-h-[4.5rem] leading-tight">PROLOCK</h2>
+                    <h2 className="text-3xl font-black uppercase mb-10 tracking-wider text-center flex items-center justify-center min-h-[4.5rem] leading-tight">PROLOCK Test</h2>
 
                     <ul className="w-full list-none p-0 m-0 flex flex-col gap-6">
                         {/* Item 1 */}
