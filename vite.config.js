@@ -17,10 +17,9 @@ export default defineConfig({
           // Ensure host header is present for MiniOxygen
           if (!req.headers.host) {
             const address = server.httpServer?.address();
-            req.headers.host =
-              address && typeof address !== 'string'
-                ? `localhost:${address.port}`
-                : 'localhost:3000';
+            req.headers.host = address && typeof address !== 'string'
+              ? `localhost:${address.port}`
+              : 'localhost:3001';
           }
           next();
         });
@@ -54,6 +53,6 @@ export default defineConfig({
   },
   server: {
     host: '127.0.0.1',
-    port: 3000,
+    port: 4000,
   },
 });
