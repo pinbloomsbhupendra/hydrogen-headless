@@ -1,3 +1,10 @@
 export async function loader({context}) {
-  return context.customerAccount.login();
+  const response = await context.customerAccount.login();
+
+  response.headers.append(
+    'Set-Cookie',
+    await context.session.commit(),
+  );
+
+  return response;
 }
