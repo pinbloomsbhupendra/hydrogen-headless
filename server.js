@@ -1,3 +1,4 @@
+// Virtual entry point for the app
 import * as remixBuild from 'virtual:react-router/server-build';
 import { createRequestHandler } from '@shopify/hydrogen';
 import { createAppLoadContext } from '~/lib/context';
@@ -9,23 +10,23 @@ export default {
                 throw new Error('SESSION_SECRET environment variable is not set');
             }
 
-            // Force the request URL to use the custom domain if present in environment or hardcoded
-            let requestUrl = new URL(request.url);
-            if (requestUrl.hostname.includes('myshopify.dev') || requestUrl.hostname.includes('oxygen')) {
-                // If running on Oxygen but want to enforce the custom domain
-                requestUrl.hostname = 'myhydrogen.pinblooms.in';
-                requestUrl.protocol = 'https:';
-                requestUrl.port = ''; // Standard HTTPS port
+            // Ensure the request URL matches the Host header (useful for proxies/Oxygen)
+            const url = new URL(request.url);
+            if (request.headers.has('Host')) {
+                url.host = request.headers.get('Host');
+                url.protocol = 'https:'; // Assume HTTPS behind proxy
             }
+
+            const newRequest = new Request(url.toString(), request);
 
             const handleRequest = createRequestHandler({
                 build: remixBuild,
                 mode: env.NODE_ENV || 'production',
                 getLoadContext: () =>
-                    createAppLoadContext(new Request(requestUrl.toString(), request), env, executionContext),
+                    createAppLoadContext(newRequest, env, executionContext),
             });
 
-            const response = await handleRequest(new Request(requestUrl.toString(), request));
+            const response = await handleRequest(newRequest);
 
             return response;
         } catch (error) {
