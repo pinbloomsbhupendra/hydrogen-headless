@@ -21,13 +21,15 @@ export async function createAppLoadContext(request, env, executionContext) {
     /**
      * Create Hydrogen's Storefront client.
      */
+
     const { storefront } = createStorefrontClient({
         cache,
         waitUntil: (p) => executionContext.waitUntil(p),
         i18n: { language: 'EN', country: 'US' },
-        publicStorefrontToken: env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN,
-        storeDomain: env.NEXT_PUBLIC_SHOPIFY_DOMAIN,
+        publicStorefrontToken: env.PUBLIC_STOREFRONT_API_TOKEN,
+        storeDomain: env.PUBLIC_STORE_DOMAIN,
     });
+
 
     /**
      * Create Hydrogen's Customer Account client.
