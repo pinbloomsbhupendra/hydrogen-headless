@@ -19,8 +19,6 @@ export async function action({ context, request }) {
       const returnTo = formData.get('return_to');
       const email = formData.get('email');
 
-      // 🚀 IMPORTANT: return directly, do NOT append cookies
-      // 🚀 IMPORTANT: return directly, do NOT append cookies
       const response = await context.customerAccount.login({
         returnTo: returnTo || '/account',
         loginHint: email || undefined,
@@ -100,9 +98,10 @@ export default function Login() {
           </Form>
 
           {error && (
-            <p className="mt-4 text-red-600 font-bold text-center border-2 border-red-600 p-2 bg-red-50">
-              {error}
-            </p>
+            <div className="mt-4 bg-red-50 border-2 border-red-600 p-4 rounded text-center">
+              <p className="text-red-900 font-bold text-lg mb-2">Login Failed</p>
+              <p className="text-red-700 font-mono text-sm break-words">{error}</p>
+            </div>
           )}
         </div>
 
