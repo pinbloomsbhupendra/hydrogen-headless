@@ -36,8 +36,9 @@ export async function createAppLoadContext(request, env, executionContext) {
   const customerAccount = createCustomerAccountClient({
     request,
     session,
-    clientId: env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID,
-    customerAccountApiUrl: env.PUBLIC_CUSTOMER_ACCOUNT_API_URL,
+    customerAccountId: env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID || '66d66652-1c70-46d2-a717-1a0177147762',
+    customerAccountUrl: env.PUBLIC_CUSTOMER_ACCOUNT_API_URL || 'https://shopify.com/80392814850',
+    shopId: env.SHOP_ID || '80392814850',
   });
 
   return {
