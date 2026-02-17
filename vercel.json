@@ -1,0 +1,15 @@
+{
+    "functions": {
+        "api/index.js": {
+            "maxDuration": 60,
+            "memory": 1024
+        }
+    },
+    "framework": "remix",
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/api/index.js"
+        }
+    ]
+}

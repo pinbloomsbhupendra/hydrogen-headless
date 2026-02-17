@@ -1,6 +1,6 @@
 import * as serverBuild from 'virtual:react-router/server-build';
-import {createRequestHandler, storefrontRedirect} from '@shopify/hydrogen';
-import {createHydrogenRouterContext} from '~/lib/context';
+import { createRequestHandler, storefrontRedirect } from '@shopify/hydrogen';
+import { createHydrogenRouterContext } from '~/lib/context';
 
 /**
  * Export a fetch handler in module format.
@@ -54,8 +54,8 @@ export default {
 
       return response;
     } catch (error) {
-      console.error(error);
-      return new Response('An unexpected error occurred', {status: 500});
+      console.error('Server Error:', error);
+      return new Response('An unexpected error occurred', { status: 500 });
     }
   },
 };
