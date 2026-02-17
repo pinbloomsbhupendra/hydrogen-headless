@@ -47,7 +47,9 @@ const CUSTOMER_QUERY = `#graphql
 export async function action({ context }) {
     try {
         console.log('Initiating Shopify Login...');
-        return await context.customerAccount.login();
+        const response = await context.customerAccount.login();
+        response.headers.append('Set-Cookie', await context.session.commit());
+        return response;
     } catch (error) {
         console.error('Account action error:', error);
         return { error: error.message || 'Login initialization failed.' };
