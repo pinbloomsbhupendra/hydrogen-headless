@@ -45,8 +45,16 @@ export async function action({ context, request }) {
 
     throw new Error('Invalid intent');
   } catch (error) {
-    console.error('Auth error:', error);
-    return { error: 'Authentication failed' };
+    if (error instanceof Response) {
+      // It's a redirect, so re-throw it!
+      throw error;
+    }
+    console.error('Auth error full:', error);
+    if (error instanceof Error) {
+      console.error('Auth error message:', error.message);
+      console.error('Auth error stack:', error.stack);
+    }
+    return { error: `Authentication failed: ${error.message || 'Unknown error'}` };
   }
 }
 
