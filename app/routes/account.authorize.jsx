@@ -1,11 +1,9 @@
-import {redirect} from '@shopify/remix-oxygen';
-
 export async function loader({context, request}) {
   try {
-    // IMPORTANT: pass request here
+    // Complete OAuth authorization
     const response = await context.customerAccount.authorize(request);
 
-    // Save session cookie
+    // Store session cookie
     response.headers.append(
       'Set-Cookie',
       await context.session.commit()
@@ -14,6 +12,11 @@ export async function loader({context, request}) {
     return response;
   } catch (error) {
     console.error('Authorize callback error:', error);
-    return redirect('/account/login');
+
+    // Fallback redirect without external imports
+    return new Response(null, {
+      status: 302,
+      headers: { Location: '/account/login' },
+    });
   }
 }
