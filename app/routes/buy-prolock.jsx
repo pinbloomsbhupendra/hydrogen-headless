@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useLoaderData, useActionData, Form, useNavigation } from '@remix-run/react';
-import { redirect } from '@shopify/remix-oxygen';
+import { useLoaderData, useActionData, Form, useNavigation, redirect } from 'react-router';
 import { Money } from '@shopify/hydrogen';
 import { addToCart } from '~/lib/cart.server';
 
@@ -85,7 +84,7 @@ export default function BuyProLock() {
 
   return (
     <div className="w-full max-w-7xl mx-auto p-6 flex flex-col md:flex-row gap-10 bg-white shadow-xl rounded-xl mt-10 mb-10">
-      
+
       {/* LEFT IMAGE */}
       <div className="w-full md:w-1/2 flex items-center justify-center bg-gray-50 rounded-xl p-8">
         {product.images.nodes[0] && (
@@ -141,17 +140,16 @@ export default function BuyProLock() {
           <button
             type="submit"
             disabled={!isAvailable || isSubmitting}
-            className={`w-full bg-red-600 text-white font-bold py-4 rounded-lg text-lg transition ${
-              !isAvailable || isSubmitting
+            className={`w-full bg-red-600 text-white font-bold py-4 rounded-lg text-lg transition ${!isAvailable || isSubmitting
                 ? 'opacity-50 cursor-not-allowed'
                 : 'hover:bg-red-700'
-            }`}
+              }`}
           >
             {isSubmitting
               ? 'Adding...'
               : isAvailable
-              ? 'Add to Cart'
-              : 'Out of Stock'}
+                ? 'Add to Cart'
+                : 'Out of Stock'}
           </button>
         </Form>
       </div>
