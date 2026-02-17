@@ -1,19 +1,19 @@
-import { redirect } from 'react-router';
+import {redirect} from '@shopify/remix-oxygen';
 
 /**
- * Account Authorize Route
- * Handles the OAuth callback from Shopify Customer Account API.
+ * Handles OAuth callback from Shopify Customer Account API
  */
-export async function loader({ context }) {
-    try {
-        const response = await context.customerAccount.authorize();
+export async function loader({context, request}) {
+  try {
+    // Complete authorization and get response
+    const response = await context.customerAccount.authorize(request);
 
-        // CRITICAL: Commit the session to save the auth token
-        response.headers.append('Set-Cookie', await context.session.commit());
+    // Commit session so customer token is stored in cookies
+    response.headers.append('Set-Cookie', await context.session.commit());
 
-        return response;
-    } catch (error) {
-        console.error('Authorize callback error:', error);
-        return redirect('/account');
-    }
+    return response;
+  } catch (error) {
+    console.error('Authorize callback error:', error);
+    return redirect('/account');
+  }
 }
