@@ -6,6 +6,7 @@ import { createAppSession } from '~/lib/session.server';
 
 export async function createAppLoadContext(request, env, executionContext) {
   const cache = await caches.open('hydrogen');
+
   const storage = createAppSession(env);
 
   const sessionInstance = await storage.getSession(
