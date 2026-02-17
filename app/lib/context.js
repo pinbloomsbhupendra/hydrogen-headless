@@ -30,11 +30,14 @@ export async function createAppLoadContext(request, env, executionContext) {
     storeDomain: env.PUBLIC_STORE_DOMAIN,
   });
 
+  console.log('Context Load - ClientID:', env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID);
+  console.log('Context Load - ApiURL:', env.PUBLIC_CUSTOMER_ACCOUNT_API_URL);
+
   const customerAccount = createCustomerAccountClient({
     request,
     session,
-    clientId: env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID,
-    customerAccountApiUrl: env.PUBLIC_CUSTOMER_ACCOUNT_API_URL,
+    clientId: '66d66652-1c70-46d2-a717-1a0177147762',
+    customerAccountApiUrl: 'https://shopify.com/80392814850',
   });
 
   return {
