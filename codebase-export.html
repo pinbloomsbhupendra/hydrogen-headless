@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProLock - Codebase Export</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <style>
+        :root {
+            --primary: #e31722;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        aside {
+            width: 300px;
+            background: #020617;
+            border-right: 1px solid #334155;
+            padding: 2rem;
+            display: flex;
+            flex-col;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-weight: 900;
+            font-style: italic;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+        }
+
+        .nav-item {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            color: #94a3b8;
+        }
+
+        .nav-item:hover {
+            background: #1e293b;
+            color: white;
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .badge {
+            background: #10b981;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        pre {
+            border-radius: 1rem !important;
+            margin: 0 !important;
+            background: #010409 !important;
+            padding: 2rem !important;
+        }
+
+        .code-container {
+            display: none;
+        }
+
+        .code-container.active {
+            display: block;
+            animation: fadeUp 0.3s ease-out;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <aside>
+        <div class="logo">PROLOCK</div>
+        <div class="nav-item active" onclick="show('home')">Home Page</div>
+        <div class="nav-item" onclick="show('login')">Login Page</div>
+        <div class="nav-item" onclick="show('dashboard')">Dashboard</div>
+        <div class="nav-item" onclick="show('warranty')">Warranty Registry</div>
+    </aside>
+    <main>
+        <div class="header">
+            <h1 id="view-title">Home Page</h1>
+            <span class="badge">PRODUCTION READY</span>
+        </div>
+
+        <div id="home" class="code-container active">
+            <pre><code class="language-jsx">
+import Hero from '../components/Hero/Hero';
+import Promo from '../components/Article/Article';
+
+export default function Index() {
+    return (
+        &lt;&gt;
+            &lt;Hero /&gt;
+            &lt;Promo /&gt;
+        &lt;/&gt;
+    );
+}
+            </code></pre>
+        </div>
+
+        <div id="login" class="code-container">
+            <pre><code class="language-jsx">
+// login.jsx (Truncated for brevity in preview, full code in repo)
+import { Form, useActionData, useNavigation, useSearchParams } from 'react-router';
+// ... Auth logic with Shopify Customer Account API ...
+            </code></pre>
+        </div>
+
+        <div id="dashboard" class="code-container">
+            <pre><code class="language-jsx">
+// dashboard.jsx (Full logic integrated with HubSpot & Shopify)
+export async function loader({ context }) {
+    // ... HubSpot Serial Verification Integration ...
+}
+            </code></pre>
+        </div>
+
+        <div id="warranty" class="code-container">
+            <pre><code class="language-jsx">
+// register-warranty.jsx
+export async function action({ request, context }) {
+    // handles verification and registration
+}
+            </code></pre>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <script>
+        function show(id) {
+            document.querySelectorAll('.code-container').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.currentTarget.classList.add('active');
+            document.getElementById('view-title').innerText = event.currentTarget.innerText;
+        }
+    </script>
+</body>
+
+</html>

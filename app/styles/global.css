@@ -1,0 +1,64 @@
+/**
+ * Global Styles
+ * 
+ * Base styles for the Prolock Hydrogen storefront.
+ * Tailwind CSS is imported and extended with custom global styles.
+ */
+
+@import "tailwindcss";
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+/**
+ * Body - Reset and base typography
+ */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* ============================================
+   Main Content Area
+   ============================================ */
+
+/**
+ * Main content area
+ * Removed default padding to allow full-width sections (like Homepage).
+ * Individual pages should manage their own containers.
+ */
+main {
+  width: 100%;
+}
+
+/* ============================================
+   Form Elements
+   ============================================ */
+
+/**
+ * Input and button base styles
+ * Provides consistent spacing and sizing for form elements
+ */
+input,
+button {
+  padding: 8px;
+  margin: 6px 0;
+}
+
+/* ============================================
+   Loading Indicator Overrides
+   ============================================ */
+
+/* Hide Hydrogen default loading indicator */
+[data-loading-indicator],
+.hydrogen-loading,
+.react-router-loading {
+  display: none !important;
+}
+
+/* Hide SVG spinners */
+svg[aria-label="loading"],
+svg.loading-spinner {
+  display: none !important;
+}
