@@ -31,8 +31,7 @@ export async function createAppLoadContext(request, env, executionContext) {
     storeDomain: env.PUBLIC_STORE_DOMAIN,
   });
 
-  console.log('Context Load - ClientID:', env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID);
-  console.log('Context Load - ApiURL:', env.PUBLIC_CUSTOMER_ACCOUNT_API_URL);
+
 
   const customerAccount = createCustomerAccountClient({
     request,
