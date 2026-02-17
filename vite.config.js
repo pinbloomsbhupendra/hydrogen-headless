@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite';
+import {defineConfig} from 'vite';
 import fs from 'fs';
-import { hydrogen } from '@shopify/hydrogen/vite';
-import { reactRouter } from '@react-router/dev/vite';
-import { oxygen } from '@shopify/mini-oxygen/vite';
+import {hydrogen} from '@shopify/hydrogen/vite';
+import {reactRouter} from '@react-router/dev/vite';
+import {oxygen} from '@shopify/mini-oxygen/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
@@ -17,9 +17,10 @@ export default defineConfig({
           // Ensure host header is present for MiniOxygen
           if (!req.headers.host) {
             const address = server.httpServer?.address();
-            req.headers.host = address && typeof address !== 'string'
-              ? `localhost:${address.port}`
-              : 'localhost:3001';
+            req.headers.host =
+              address && typeof address !== 'string'
+                ? `localhost:${address.port}`
+                : 'localhost:3000';
           }
           next();
         });
@@ -48,11 +49,11 @@ export default defineConfig({
   ssr: {
     noExternal: true,
     optimizeDeps: {
-      include: ['set-cookie-parser', 'cookie'],
+      include: ['react-router-dom', 'set-cookie-parser', 'cookie'],
     },
   },
   server: {
     host: '127.0.0.1',
-    port: 4000,
+    port: 3000,
   },
 });
