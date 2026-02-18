@@ -29,7 +29,7 @@ const CookieBanner = () => {
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[90%] md:w-[80%] bg-slate-50 border border-gray-200 shadow-2xl rounded-xl p-6 z-50 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex-1 text-center md:text-left">
                 <p className="text-gray-700 text-sm md:text-base leading-relaxed font-medium italic">
-                    7777We and our partners, including Shopify, use cookies and other technologies to personalize your experience, show you ads, and perform analytics, and we will not use cookies or other technologies for these purposes unless you accept them. Learn more in our <Link to="/policies/privacy-policy" className="underline hover:text-red-600 transition-colors">Cookie Policy</Link>.
+                    We and our partners, including Shopify, use cookies and other technologies to personalize your experience, show you ads, and perform analytics, and we will not use cookies or other technologies for these purposes unless you accept them. Learn more in our <Link to="/policies/privacy-policy" className="underline hover:text-red-600 transition-colors">Cookie Policy</Link>.
                 </p>
             </div>
             <div className="flex gap-4 shrink-0">
