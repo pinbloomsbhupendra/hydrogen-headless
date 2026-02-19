@@ -147,14 +147,44 @@ export async function submitToHubSpot(data, accessToken) {
         }
 
         // ---------------------------------------------------------
-        // 3. CREATE WARRANTY OBJECT (Orphaned)
+        // 3. SEARCH FOR EXISTING WARRANTY (Prevent Duplicates for Same Order + Product)
+        // ---------------------------------------------------------
+        const productName = data.product_name || 'Product';
+        const orderId = data.order_number;
+
+        console.log(`[HubSpot] Checking for existing registration for Order ${orderId} / ${productName}...`);
+
+        const existingSearchRes = await fetch(`https://api.hubapi.com/crm/v3/objects/${HUBSPOT_OBJECT_TYPE}/search`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${cleanKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                filterGroups: [{
+                    filters: [
+                        { propertyName: 'order_id', operator: 'EQ', value: orderId },
+                        { propertyName: 'product_name', operator: 'EQ', value: productName }
+                    ]
+                }],
+                limit: 1
+            })
+        });
+
+        if (existingSearchRes.ok) {
+            const existingSearchData = await existingSearchRes.json();
+            if (existingSearchData.total > 0) {
+                console.warn(`[HubSpot] Duplicate detected for Order ${orderId} + ${productName}`);
+                throw new Error(`This product (${productName}) is already registered for order ${orderId}.`);
+            }
+        }
+
+        // ---------------------------------------------------------
+        // 4. CREATE WARRANTY OBJECT (Orphaned)
         // ---------------------------------------------------------
         const warrantyProps = {
             warranty_number: Number(data.warranty_number),
             serial_number: serial,
-            product_name: data.product_name || 'Product',
+            product_name: productName,
             model_type: modelType,
-            order_id: data.order_number,
+            order_id: orderId,
             purchase_date: toHubSpotDate(data.purchaseDate),
             phone: data.phone
         };
