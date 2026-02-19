@@ -1,7 +1,7 @@
 
 export async function loader({ context }) {
-    const key = context.env.HUBSPOT_PRIVATE_ACCESS_KEY || process.env.HUBSPOT_PRIVATE_ACCESS_KEY;
-    const cleanKey = key.replace(/^Bearer\s+/i, '');
+    const key = context.env.HUBSPOT_PRIVATE_ACCESS_KEY || context.env.HUBSPOT_API_KEY || process.env.HUBSPOT_PRIVATE_ACCESS_KEY || process.env.HUBSPOT_API_KEY;
+    const cleanKey = key ? key.replace(/^Bearer\s+/i, '') : '';
     const OBJECT_TYPE = '2-225350388';
 
     const results = {};

@@ -1,4 +1,3 @@
-import HubSpotService from '../../services/hubspot.js';
 
 const HUBSPOT_OBJECT_TYPE = 'p245100011_warranty_registrations'; // Warranty Registrations (Custom Object)
 

@@ -6,11 +6,11 @@ import axios from 'axios';
  */
 class HubSpotService {
     get portalId() {
-        return process.env.VITE_HUBSPOT_PORTAL_ID;
+        return '245100011'; // Constant for this portal
     }
 
     get apiKey() {
-        return process.env.HUBSPOT_API_KEY;
+        return process.env.HUBSPOT_PRIVATE_ACCESS_KEY || process.env.HUBSPOT_API_KEY;
     }
 
     constructor() {
