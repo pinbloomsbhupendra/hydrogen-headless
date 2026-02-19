@@ -5,10 +5,8 @@ const HUBSPOT_OBJECT_TYPE = 'p245100011_warranty_registrations'; // Warranty Reg
 export async function submitToHubSpot(data, accessToken) {
     if (!accessToken) {
         console.warn('HubSpot Access Token missing in submitToHubSpot');
-        // HubSpotService uses process.env.HUBSPOT_API_KEY. 
-        // We should ensure that is set or pass the token to the service if modified to accept it.
-        // The current HubSpotService reads from process.env.
-        // We will assume process.env.HUBSPOT_API_KEY is set or we should set it dynamically if possible?
+        // HubSpotService uses process.env.HUBSPOT_PRIVATE_ACCESS_KEY. 
+        // We will assume process.env.HUBSPOT_PRIVATE_ACCESS_KEY is set or we should set it dynamically if possible?
         // Actually, the user's HubSpotService uses `process.env`.
         // If we are in Oxygen/Hydrogen context, we might need to rely on `accessToken` passed in 
         // OR rely on the fact that Hydrogen exposes env vars to process.env if configured?

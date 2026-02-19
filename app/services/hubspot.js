@@ -10,7 +10,7 @@ class HubSpotService {
     }
 
     get apiKey() {
-        return process.env.HUBSPOT_API_KEY;
+        return process.env.HUBSPOT_PRIVATE_ACCESS_KEY;
     }
 
     constructor() {
