@@ -9,16 +9,25 @@ import { CUSTOMER_QUERY } from '../graphql/customer/queries';
 ====================================================== */
 function getAdminCreds(context) {
     const env = context.env || process.env || {};
+
+    // Check multiple possible names for the admin token
     const adminToken =
         env.SHOPIFY_ADMIN_API_TOKEN ||
-        process.env?.SHOPIFY_ADMIN_API_TOKEN ||
-        null;
-    const shopDomain =
-        env.PUBLIC_STORE_DOMAIN ||
-        process.env?.PUBLIC_STORE_DOMAIN ||
+        env.SHOPIFY_ADMIN_TOKEN ||
+        env.PRIVATE_ADMIN_API_TOKEN ||
         null;
 
-    console.log('[getAdminCreds] Token present:', !!adminToken, 'Domain:', shopDomain);
+    // Check multiple possible names for the shop domain
+    const shopDomain =
+        env.PUBLIC_STORE_DOMAIN ||
+        env.SHOP_DOMAIN ||
+        'iqwxvr-b0.myshopify.com'; // Hardcoded fallback for this specific store
+
+    console.log('[getAdminCreds] Discovery:', {
+        hasToken: !!adminToken,
+        shopDomain,
+        availableKeys: Object.keys(env).filter(k => !k.includes('SECRET') && !k.includes('KEY') && !k.includes('TOKEN')) // Log safe keys
+    });
 
     return { adminToken, shopDomain };
 }
