@@ -6,9 +6,12 @@ import {
 import { createAppSession } from '~/lib/session.server';
 import { CART_QUERY_FRAGMENT } from '~/graphql/cart/queries';
 
+/**
+ * The Load Context is where you define any reusable services or clients
+ * available to all loaders and actions.
+ */
 export async function createAppLoadContext(request, env, executionContext) {
   const cache = await caches.open('hydrogen');
-
   const storage = createAppSession(env);
 
   const sessionInstance = await storage.getSession(
@@ -24,26 +27,30 @@ export async function createAppLoadContext(request, env, executionContext) {
 
   /**
    * Storefront client
+   * Uses PRIVATE_STOREFRONT_API_TOKEN for server-side requests.
    */
   const { storefront } = createStorefrontClient({
     cache,
     waitUntil: (p) => executionContext.waitUntil(p),
     i18n: { language: 'EN', country: 'US' },
-    // Using private token as public token is unauthorized
     privateStorefrontToken: env.PRIVATE_STOREFRONT_API_TOKEN,
-    storeDomain: env.PUBLIC_STORE_DOMAIN || 'iqwxvr-b0.myshopify.com',
+    storeDomain: env.PUBLIC_STORE_DOMAIN,
   });
 
-
-
+  /**
+   * Customer Account client
+   */
   const customerAccount = createCustomerAccountClient({
     request,
     session,
-    customerAccountId: env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID || '66d66652-1c70-46d2-a717-1a0177147762',
-    customerAccountUrl: env.PUBLIC_CUSTOMER_ACCOUNT_API_URL || 'https://shopify.com/80392814850',
-    shopId: env.SHOP_ID || '80392814850',
+    customerAccountId: env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID,
+    customerAccountUrl: env.PUBLIC_CUSTOMER_ACCOUNT_API_URL,
+    shopId: env.SHOP_ID,
   });
 
+  /**
+   * Cart Handler
+   */
   const cart = createCartHandler({
     storefront,
     customerAccount,
