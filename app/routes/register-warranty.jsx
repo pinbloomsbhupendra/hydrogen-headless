@@ -178,35 +178,38 @@ export async function action({ request, context }) {
             // If shopifyCustomerId is null, this might fail or skip metafield part
             const result = await registerWarranty(payload, adminToken, shopDomain);
 
-            /* 2️⃣ SYNC TO HUBSPOT (NON-BLOCKING) */
-            const hubspotKey =
-                context.env?.HUBSPOT_PRIVATE_ACCESS_KEY ||
-                process.env.HUBSPOT_PRIVATE_ACCESS_KEY;
+            /* 2️⃣ SYNC TO HUBSPOT (BACKGROUND - INSTANT SPEED) */
+            const hubspotKey = context.env?.HUBSPOT_PRIVATE_ACCESS_KEY || process.env.HUBSPOT_PRIVATE_ACCESS_KEY;
 
             if (hubspotKey) {
-                console.log('[action] Attempting HubSpot Sync...', { hasKey: true });
-                try {
-                    const cleanKey = hubspotKey.replace(/^Bearer\s+/i, '');
-                    const hubspotData = {
-                        email: email,
-                        firstName: formData.get('firstName'),
-                        lastName: formData.get('lastName'),
-                        phone: formData.get('phone'),
-                        address: formData.get('address'),
-                        city: formData.get('city'),
-                        state: formData.get('state'),
-                        zip: formData.get('zip'),
-                        country: formData.get('country'),
-                        purchaseDate: formData.get('purchaseDate'),
-                        serial: serial,
-                        product_name: formData.get('productTitle'),
-                        warranty_number: result?.warranty?.warrantyNumber, // generated in actions.js
-                        order_number: orderNumber
-                    };
-                    await submitToHubSpot(hubspotData, cleanKey);
-                } catch (hsError) {
-                    console.error('[action] HubSpot Sync Failed:', hsError);
-                    return { error: `HubSpot Sync Failed: ${hsError.message}` };
+                const cleanKey = hubspotKey.replace(/^Bearer\s+/i, '');
+                const hubspotData = {
+                    email: email,
+                    firstName: formData.get('firstName'),
+                    lastName: formData.get('lastName'),
+                    phone: formData.get('phone'),
+                    address: formData.get('address'),
+                    city: formData.get('city'),
+                    state: formData.get('state'),
+                    zip: formData.get('zip'),
+                    country: formData.get('country'),
+                    purchaseDate: formData.get('purchaseDate'),
+                    serial: serial,
+                    product_name: formData.get('productTitle'),
+                    warranty_number: result?.warranty?.warrantyNumber,
+                    order_number: orderNumber
+                };
+
+                // 1. FAST CHECK (Awaited to catch duplicates)
+                const saveToHubSpot = await submitToHubSpot(hubspotData, cleanKey);
+
+                // 2. BACKGROUND SAVE (Not awaited, instant redirect)
+                if (typeof saveToHubSpot === 'function') {
+                    if (context.waitUntil) {
+                        context.waitUntil(saveToHubSpot().catch(e => console.error('[Background HS Sync Error]', e)));
+                    } else {
+                        saveToHubSpot().catch(e => console.error('[Background HS Sync Error]', e));
+                    }
                 }
             }
 

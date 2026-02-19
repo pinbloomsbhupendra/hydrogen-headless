@@ -67,5 +67,6 @@ export async function createAppLoadContext(request, env, executionContext) {
     cart,
     session,
     env,
+    waitUntil: executionContext.waitUntil.bind(executionContext),
   };
 }

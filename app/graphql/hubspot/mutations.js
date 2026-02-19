@@ -59,19 +59,41 @@ export async function submitToHubSpot(data, accessToken) {
     const cleanKey = accessToken.replace(/^Bearer\s+/i, '');
 
     try {
-        console.log(`[HubSpot] Starting optimized sync for ${data.email}...`);
-
         const productName = data.product_name || 'Product';
         const orderId = data.order_number;
         const serial = data.serial || '';
         const modelType = (productName).toLowerCase().includes('guardian') ? 'Guardian' : 'Standard';
 
         // ---------------------------------------------------------
-        // 1. PARALLEL CHECKS (Contact + Duplicates)
+        // 1. FAST CHECK: Duplicate Warranty
         // ---------------------------------------------------------
-        const [searchRes, duplicateRes] = await Promise.all([
+        const duplicateRes = await fetch(`https://api.hubapi.com/crm/v3/objects/${HUBSPOT_OBJECT_TYPE}/search`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${cleanKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                filterGroups: [{
+                    filters: [
+                        { propertyName: 'order_id', operator: 'EQ', value: orderId },
+                        { propertyName: 'product_name', operator: 'EQ', value: productName }
+                    ]
+                }],
+                limit: 1
+            })
+        });
+
+        if (duplicateRes.ok) {
+            const duplicateData = await duplicateRes.json();
+            if (duplicateData.total > 0) {
+                throw new Error(`This product (${productName}) is already registered for order ${orderId}.`);
+            }
+        }
+
+        // Return a function to handle the rest in the background
+        return async () => {
+            console.log(`[HubSpot] Background saving for ${data.email}...`);
+
             // Search Contact
-            fetch(`https://api.hubapi.com/crm/v3/objects/contacts/search`, {
+            const searchRes = await fetch(`https://api.hubapi.com/crm/v3/objects/contacts/search`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${cleanKey}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -79,104 +101,67 @@ export async function submitToHubSpot(data, accessToken) {
                     properties: ['email'],
                     limit: 1
                 })
-            }),
-            // Check Duplicate Warranty
-            fetch(`https://api.hubapi.com/crm/v3/objects/${HUBSPOT_OBJECT_TYPE}/search`, {
+            });
+            const searchData = await searchRes.json();
+            let contactId = searchData.results?.[0]?.id;
+
+            // Prepare Props
+            const details = [`Serial: ${serial}`, `Type: ${modelType}`, `Date: ${data.purchaseDate}`, `Phone: ${data.phone}`];
+            const productInfo = `${productName} | ${details.join(' | ')}`;
+            const contactProperties = {
+                email: data.email, firstname: data.firstName, lastname: data.lastName,
+                phone: data.phone, address: data.address, city: data.city, state: data.state,
+                zip: data.zip, country: data.country,
+                serial_number: serial, warranty_serial: serial, warranty_model_type: modelType,
+                product_details: productInfo, warranty_product: productName
+            };
+
+            // Start Contact Update
+            const contactMethod = contactId ? 'PATCH' : 'POST';
+            const contactUrl = contactId ? `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}` : `https://api.hubapi.com/crm/v3/objects/contacts`;
+            const contactPromise = fetch(contactUrl, {
+                method: contactMethod,
+                headers: { Authorization: `Bearer ${cleanKey}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ properties: contactProperties })
+            });
+
+            // Create Warranty
+            const warrantyRes = await fetch(`https://api.hubapi.com/crm/v3/objects/${HUBSPOT_OBJECT_TYPE}`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${cleanKey}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    filterGroups: [{
-                        filters: [
-                            { propertyName: 'order_id', operator: 'EQ', value: orderId },
-                            { propertyName: 'product_name', operator: 'EQ', value: productName }
-                        ]
-                    }],
-                    limit: 1
+                    properties: {
+                        warranty_number: Number(data.warranty_number),
+                        serial_number: serial,
+                        product_name: productName,
+                        model_type: modelType,
+                        order_id: orderId,
+                        purchase_date: toHubSpotDate(data.purchaseDate),
+                        phone: data.phone
+                    }
                 })
-            })
-        ]);
+            });
 
-        const [searchData, duplicateData] = await Promise.all([
-            searchRes.json(),
-            duplicateRes.json()
-        ]);
+            const warrantyData = await warrantyRes.json();
+            const warrantyId = warrantyData.id;
 
-        // Fail early if duplicate found
-        if (duplicateData.total > 0) {
-            throw new Error(`This product (${productName}) is already registered for order ${orderId}.`);
-        }
+            if (!contactId) {
+                const rawContact = await contactPromise;
+                const newContactData = await rawContact.json();
+                contactId = newContactData.id;
+            }
 
-        // ---------------------------------------------------------
-        // 2. PREPARE PROPERTIES
-        // ---------------------------------------------------------
-        const details = [`Serial: ${serial}`, `Type: ${modelType}`, `Date: ${data.purchaseDate}`, `Phone: ${data.phone}`];
-        const productInfo = `${productName} | ${details.join(' | ')}`;
+            // Associate (ID 33)
+            await fetch(`https://api.hubapi.com/crm/v3/objects/${HUBSPOT_OBJECT_TYPE}/${warrantyId}/associations/contacts/${contactId}/33`, {
+                method: 'PUT',
+                headers: { Authorization: `Bearer ${cleanKey}` }
+            });
 
-        const contactProperties = {
-            email: data.email, firstname: data.firstName, lastname: data.lastName,
-            phone: data.phone, address: data.address, city: data.city, state: data.state,
-            zip: data.zip, country: data.country,
-            serial_number: serial, warranty_serial: serial, warranty_model_type: modelType,
-            product_details: productInfo, warranty_product: productName
+            console.log(`[HubSpot] Background save complete: ${warrantyId}`);
         };
-
-        // ---------------------------------------------------------
-        // 3. UPSERT CONTACT & CREATE WARRANTY (Sequential but faster)
-        // ---------------------------------------------------------
-        let contactId = searchData.results?.[0]?.id;
-
-        const contactMethod = contactId ? 'PATCH' : 'POST';
-        const contactUrl = contactId ? `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}` : `https://api.hubapi.com/crm/v3/objects/contacts`;
-
-        const contactPromise = fetch(contactUrl, {
-            method: contactMethod,
-            headers: { Authorization: `Bearer ${cleanKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ properties: contactProperties })
-        });
-
-        const warrantyProps = {
-            warranty_number: Number(data.warranty_number),
-            serial_number: serial,
-            product_name: productName,
-            model_type: modelType,
-            order_id: orderId,
-            purchase_date: toHubSpotDate(data.purchaseDate),
-            phone: data.phone
-        };
-
-        const warrantyRes = await fetch(`https://api.hubapi.com/crm/v3/objects/${HUBSPOT_OBJECT_TYPE}`, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${cleanKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ properties: warrantyProps })
-        });
-
-        if (!warrantyRes.ok) throw new Error(`Failed to create warranty: ${await warrantyRes.text()}`);
-
-        const warrantyData = await warrantyRes.json();
-        const warrantyId = warrantyData.id;
-
-        // Ensure contact update is finished and get ID
-        if (!contactId) {
-            const rawContact = await contactPromise;
-            const newContactData = await rawContact.json();
-            contactId = newContactData.id;
-        }
-
-        // ---------------------------------------------------------
-        // 4. ASSOCIATE (Using Hardcoded ID 33 for SPEED)
-        // ---------------------------------------------------------
-        const associationTypeId = 33; // Pre-discovered for Contact-to-Warranty registration
-
-        await fetch(`https://api.hubapi.com/crm/v3/objects/${HUBSPOT_OBJECT_TYPE}/${warrantyId}/associations/contacts/${contactId}/${associationTypeId}`, {
-            method: 'PUT',
-            headers: { Authorization: `Bearer ${cleanKey}` }
-        });
-
-        console.log(`[HubSpot] Optimized sync complete for ${warrantyId}`);
-        return warrantyData;
 
     } catch (error) {
-        console.error('[HubSpot] Sync Error:', error);
+        console.error('[HubSpot] Check Error:', error);
         throw error;
     }
 }
