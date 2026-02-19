@@ -1,8 +1,10 @@
 import {
   createStorefrontClient,
   createCustomerAccountClient,
+  createCartHandler,
 } from '@shopify/hydrogen';
 import { createAppSession } from '~/lib/session.server';
+import { CART_QUERY_FRAGMENT } from '~/graphql/cart/queries';
 
 export async function createAppLoadContext(request, env, executionContext) {
   const cache = await caches.open('hydrogen');
@@ -27,8 +29,9 @@ export async function createAppLoadContext(request, env, executionContext) {
     cache,
     waitUntil: (p) => executionContext.waitUntil(p),
     i18n: { language: 'EN', country: 'US' },
-    publicStorefrontToken: env.PUBLIC_STOREFRONT_API_TOKEN,
-    storeDomain: env.PUBLIC_STORE_DOMAIN,
+    // Using private token as public token is unauthorized
+    privateStorefrontToken: env.PRIVATE_STOREFRONT_API_TOKEN,
+    storeDomain: env.PUBLIC_STORE_DOMAIN || 'iqwxvr-b0.myshopify.com',
   });
 
 
@@ -41,10 +44,20 @@ export async function createAppLoadContext(request, env, executionContext) {
     shopId: env.SHOP_ID || '80392814850',
   });
 
+  const cart = createCartHandler({
+    storefront,
+    customerAccount,
+    session,
+    cartQueryFragment: CART_QUERY_FRAGMENT,
+    getCartId: () => session.get('cartId'),
+    setCartId: (cartId) => session.set('cartId', cartId),
+  });
+
   return {
     cache,
     storefront,
     customerAccount,
+    cart,
     session,
     env,
   };

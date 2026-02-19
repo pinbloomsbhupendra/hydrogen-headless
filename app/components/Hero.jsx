@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 // /**
 //  * Hero Component
@@ -15,7 +15,7 @@ import { Link } from 'react-router-dom';
 //  * @example
 //  * <Hero />
 //  */
-import './Hero.module.css';
+import './Hero.css';
 export default function Hero() {
     return (
         <section className="hero w-full relative">

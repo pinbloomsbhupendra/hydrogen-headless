@@ -1,6 +1,4 @@
-
-import React from 'react';
-import './Footer.module.css';
+import { Link } from 'react-router';
 
 export const Footer = () => {
     return (
@@ -12,9 +10,9 @@ export const Footer = () => {
 
                     {/* Logo Section - Matching the image's heavy, italic, black style */}
                     <div className="mb-10 md:mb-0">
-                        <h1 className="text-[44px] md:text-[56px] font-[900] tracking-[-0.07em] italic text-black leading-none select-none flex items-start">
+                        <Link to="/" className="text-[44px] md:text-[56px] font-[900] tracking-[-0.07em] italic text-black leading-none select-none flex items-start">
                             PROLOCK<span className="text-[10px] md:text-[12px] not-italic ml-0.5 font-black mt-1">TM</span>
-                        </h1>
+                        </Link>
                     </div>
 
                     {/* Links Grid - Using standard bold weights for an "original" site feel */}
@@ -22,9 +20,9 @@ export const Footer = () => {
                         {/* Column 1: Prolock */}
                         <div className="flex flex-col space-y-1.5">
                             <h3 className="text-[17px] font-extrabold mb-1">Prolock</h3>
-                            <a href="#" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Prolock Original</a>
-                            <a href="#" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Prolock Guardian</a>
-                            <a href="#" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Account Login</a>
+                            <Link to="/buy-prolock" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Prolock Original</Link>
+                            <Link to="/buy-prolock-guardian" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Prolock Guardian</Link>
+                            <Link to="/login" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Account Login</Link>
                         </div>
 
                         {/* Column 2: Information */}

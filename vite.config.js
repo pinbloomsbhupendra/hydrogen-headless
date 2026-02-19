@@ -1,8 +1,8 @@
-import {defineConfig} from 'vite';
+import { defineConfig } from 'vite';
 import fs from 'fs';
-import {hydrogen} from '@shopify/hydrogen/vite';
-import {reactRouter} from '@react-router/dev/vite';
-import {oxygen} from '@shopify/mini-oxygen/vite';
+import { hydrogen } from '@shopify/hydrogen/vite';
+import { reactRouter } from '@react-router/dev/vite';
+import { oxygen } from '@shopify/mini-oxygen/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
@@ -38,9 +38,7 @@ export default defineConfig({
     mainFields: ['module', 'main'],
     conditions: ['production', 'import', 'module', 'browser'],
   },
-  define: {
-    'process.env.NODE_ENV': JSON.stringify('production'),
-  },
+
   build: {
     assetsInlineLimit: 0,
     sourcemap: false,

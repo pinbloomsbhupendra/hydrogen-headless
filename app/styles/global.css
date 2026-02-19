@@ -50,6 +50,62 @@ button {
    Loading Indicator Overrides
    ============================================ */
 
+/* ============================================
+   Custom Utilities & Brand Styles
+   ============================================ */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.italic-heavy {
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+}
+
+/* Custom scrollbar for some premium feel */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #eee;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ddd;
+}
+
 /* Hide Hydrogen default loading indicator */
 [data-loading-indicator],
 .hydrogen-loading,

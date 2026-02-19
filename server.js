@@ -6,32 +6,38 @@ import { createAppLoadContext } from '~/lib/context';
 export default {
     async fetch(request, env, executionContext) {
         try {
-            if (!env?.SESSION_SECRET) {
+            const url = new URL(request.url);
+            const mode = env.NODE_ENV || 'development';
+            const isProduction = mode === 'production';
+
+            if (!env?.SESSION_SECRET && isProduction) {
                 throw new Error('SESSION_SECRET environment variable is not set');
             }
 
-            // Ensure the request URL matches the Host header (useful for proxies/Oxygen)
-            const url = new URL(request.url);
-            if (request.headers.has('Host')) {
-                url.host = request.headers.get('Host');
-                url.protocol = 'https:'; // Assume HTTPS behind proxy
+            // Disable protocol forcing and host mapping for local development to ensure cookies work over http
+            let currentRequest = request;
+            /* 
+            if (isProduction && request.headers.has('Host')) {
+                const proxyUrl = new URL(request.url);
+                proxyUrl.host = request.headers.get('Host');
+                proxyUrl.protocol = 'https:';
+                currentRequest = new Request(proxyUrl.toString(), request);
             }
-
-            const newRequest = new Request(url.toString(), request);
+            */
 
             const handleRequest = createRequestHandler({
                 build: remixBuild,
-                mode: env.NODE_ENV || 'production',
+                mode,
                 getLoadContext: () =>
-                    createAppLoadContext(newRequest, env, executionContext),
+                    createAppLoadContext(currentRequest, env, executionContext),
             });
 
-            const response = await handleRequest(newRequest);
+            const response = await handleRequest(currentRequest);
 
             return response;
         } catch (error) {
-            console.error(error);
-            return new Response(error.stack || error.message, { status: 500 });
+            console.error('[Server Error]', error);
+            return new Response(error.message, { status: 500 });
         }
     },
 };

@@ -1,10 +1,70 @@
-export const PRODUCTS_QUERY = `#graphql
-query {
-  products(first: 5) {
-    nodes {
-      id
-      title
-      handle
+export const PRODUCT_IMAGE_QUERY = `#graphql
+  query ProductImage($query: String!) {
+    products(first: 1, query: $query) {
+      nodes {
+        title
+        featuredImage {
+          url
+          altText
+        }
+      }
     }
   }
-}`;
+`;
+
+export const PRODUCT_DETAILS_QUERY = `#graphql
+  query ProductDetails($handle: String!) {
+    product(handle: $handle) {
+      id
+      title
+      descriptionHtml
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      images(first: 5) {
+        nodes {
+          url
+          altText
+          width
+          height
+        }
+      }
+      variants(first: 10) {
+        nodes {
+          id
+          availableForSale
+          price {
+            amount
+            currencyCode
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const PRODUCT_COMPARISON_QUERY = `#graphql
+  query ProductComparison($handle: String!) {
+    product(handle: $handle) {
+      title
+      descriptionHtml
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      images(first: 1) {
+        nodes {
+          url
+          altText
+          width
+          height
+        }
+      }
+    }
+  }
+`;

@@ -1,222 +1,175 @@
-import { Link, useLoaderData, useFetcher } from 'react-router';
-import { Money, Image } from '@shopify/hydrogen';
-import { getCart, updateCartLines, removeCartLines } from '../lib/cart.server';
+import { useLoaderData, Link, Form, data, useFetcher } from 'react-router';
+import { CART_QUERY } from '~/graphql/cart/queries';
 
 export async function loader({ context }) {
-    const cart = await getCart(context.request, context);
-    return { cart };
+    const { storefront, session } = context;
+    const cartId = session.get('cartId');
+    const customerAccessToken = await session.get('customerAccessToken');
+
+    let cartData = null;
+    if (cartId) {
+        const result = await storefront.query(CART_QUERY, {
+            variables: { cartId },
+            cache: storefront.CacheNone(),
+        });
+        cartData = result.cart;
+    }
+
+    const isLoggedIn = !!customerAccessToken;
+    return data({ cart: cartData, isLoggedIn }, {
+        headers: {
+            'Set-Cookie': await session.commit(),
+        }
+    });
 }
 
 export async function action({ request, context }) {
+    const { cart, session } = context;
     const formData = await request.formData();
-    const { action, lineId, quantity } = Object.fromEntries(formData);
+    const action = formData.get('action');
 
-    if (action === 'update_line') {
-        await updateCartLines(request, context, [
-            {
-                id: lineId,
-                quantity: parseInt(quantity, 10),
-            },
-        ]);
-    } else if (action === 'remove_line') {
-        await removeCartLines(request, context, [lineId]);
+    if (action === 'remove') {
+        const lineId = formData.get('lineId');
+        await cart.removeLines([lineId]);
     }
 
-    return null;
-}
-
-const CUSTOM_PRICES = {
-    'carkey': '79.99',
-    'prolock-guardian': '69.99',
-};
-
-function getLinePrice(line) {
-    const handle = line.merchandise.product.handle;
-    if (CUSTOM_PRICES[handle]) {
-        return {
-            amount: CUSTOM_PRICES[handle],
-            currencyCode: line.merchandise.price.currencyCode,
-        };
-    }
-    return line.merchandise.price;
-}
-
-export default function CartPage() {
-    const { cart } = useLoaderData();
-
-    if (!cart || cart.lines.edges.length === 0) {
-        return (
-            <div className="w-[80%] mx-auto py-20 text-center">
-                <h1 className="text-4xl font-bold mb-8">Your Cart</h1>
-                <p className="text-lg text-gray-600 mb-8">Your cart is empty.</p>
-                <Link to="/comparison-table" className="inline-block bg-black text-white px-8 py-3 rounded-lg font-bold hover:bg-gray-800 transition-colors">
-                    Continue Shopping
-                </Link>
-            </div>
-        );
+    if (action === 'update') {
+        const lineId = formData.get('lineId');
+        const quantity = parseInt(formData.get('quantity'), 10);
+        await cart.updateLines([{ id: lineId, quantity }]);
     }
 
-    const lines = cart.lines.edges.map(edge => edge.node);
-
-    // Calculate Custom Subtotal
-    const customSubtotalAmount = lines.reduce((total, line) => {
-        const price = getLinePrice(line);
-        return total + (parseFloat(price.amount) * line.quantity);
-    }, 0).toFixed(2);
-
-    const customSubtotal = {
-        amount: customSubtotalAmount,
-        currencyCode: cart.cost.subtotalAmount.currencyCode,
-    };
-
-    return (
-        <div className="w-[80%] mx-auto py-20">
-            <h1 className="text-4xl font-bold mb-12">Your Cart</h1>
-
-            <div className="flex flex-col lg:flex-row gap-12">
-                {/* Cart Items */}
-                <div className="flex-grow space-y-6">
-                    <ul className="space-y-6">
-                        {lines.map((line) => (
-                            <CartLineItem key={line.id} line={line} />
-                        ))}
-                    </ul>
-                </div>
-
-                {/* Order Summary */}
-                <div className="lg:w-96 shrink-0">
-                    <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8 sticky top-24">
-                        <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-4">Order Summary</h2>
-
-                        <div className="flow-root">
-                            <dl className="-my-4 text-sm divide-y divide-gray-200">
-                                <div className="py-4 flex items-center justify-between">
-                                    <dt className="text-gray-600">Subtotal</dt>
-                                    <dd className="font-medium text-gray-900">
-                                        <Money data={customSubtotal} />
-                                    </dd>
-                                </div>
-                                <div className="py-4 flex items-center justify-between">
-                                    <dt className="text-gray-600">Total</dt>
-                                    <dd className="font-medium text-gray-900">
-                                        <Money data={customSubtotal} />
-                                    </dd>
-                                </div>
-                            </dl>
-                        </div>
-
-                        <div className="mt-6">
-                            <a
-                                href={cart.checkoutUrl}
-                                className="w-full flex justify-center items-center px-6 py-4 border border-transparent rounded-lg shadow-md text-lg font-bold text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 transform hover:-translate-y-0.5 transition-all duration-200"
-                            >
-                                Checkout
-                            </a>
-                        </div>
-                        <div className="mt-4 text-center">
-                            <Link to="/comparison-table" className="text-gray-600 hover:text-black font-medium underline">
-                                Continue Shopping
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+    return new Response(null, {
+        headers: {
+            'Set-Cookie': await session.commit(),
+        },
+    });
 }
 
-
-function CartLineItem({ line }) {
+export default function Cart() {
+    const { cart, isLoggedIn } = useLoaderData();
     const fetcher = useFetcher();
 
-    // Optimistic UI logic
-    const isRemoving =
-        fetcher.state !== 'idle' &&
-        fetcher.formData?.get('action') === 'remove_line' &&
-        fetcher.formData?.get('lineId') === line.id;
+    const lines = cart?.lines?.nodes || [];
+    let checkoutUrl = cart?.checkoutUrl;
 
-    const isUpdating =
-        fetcher.state !== 'idle' &&
-        fetcher.formData?.get('action') === 'update_line' &&
-        fetcher.formData?.get('lineId') === line.id;
-
-    const pessimisticQuantity = line.quantity;
-    const optimisticQuantity = isUpdating
-        ? parseInt(fetcher.formData?.get('quantity'), 10)
-        : pessimisticQuantity;
-
-    if (isRemoving) return null;
+    if (isLoggedIn && checkoutUrl) {
+        checkoutUrl = `${checkoutUrl}?logged_in=true`;
+    }
 
     return (
-        <li key={line.id} className="flex flex-col sm:flex-row gap-6 bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-shadow hover:shadow-md">
-            <div className="h-100 w-100 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
-                {line.merchandise.image && (
-                    <Image
-                        data={line.merchandise.image}
-                        sizes="(min-width: 45em) 400px, 100vw"
-                        className="h-full w-full object-contain object-center p-2"
-                    />
-                )}
-            </div>
+        <div className="w-full max-w-7xl mx-auto p-4 md:p-12 min-h-screen bg-white">
+            <h1 className="text-3xl font-bold text-gray-900 mb-8">Your Cart</h1>
 
-            <div className="flex flex-1 flex-col justify-between">
-                <div>
-                    <div className="flex justify-between items-start">
-                        <h3 className="text-xl font-bold text-gray-900 hover:text-red-600 transition-colors">
-                            <Link to={`/products/${line.merchandise.product.handle}`}>
-                                {line.merchandise.product.title}
-                            </Link>
-                        </h3>
-                        <div className="text-xl font-bold text-gray-900">
-                            <Money data={getLinePrice(line)} />
+            {lines.length === 0 ? (
+                <div className="text-center py-20 bg-gray-50 rounded-lg border border-gray-100">
+                    <p className="text-xl text-gray-500 mb-6">Your cart is currently empty.</p>
+                    <Link to="/buy-prolock" className="inline-block bg-red-600 text-white font-bold py-3 px-8 rounded hover:bg-red-700 transition-colors">
+                        Continue Shopping
+                    </Link>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                    {/* Cart Items Column */}
+                    <div className="lg:col-span-2 bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
+                        {lines.map((line) => (
+                            <div key={line.id} className="p-6 border-b border-gray-100 last:border-0 flex gap-6">
+                                {/* Product Image */}
+                                <div className="w-40 h-40 bg-gray-50 rounded-md shrink-0 flex items-center justify-center p-2">
+                                    <img
+                                        src={line.merchandise.image?.url}
+                                        alt={line.merchandise.product.title}
+                                        className="w-full h-full object-contain mix-blend-multiply"
+                                    />
+                                </div>
+
+                                {/* Product Details */}
+                                <div className="flex-1 flex flex-col">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h3 className="text-lg font-bold text-gray-900">
+                                            {line.merchandise.product.title}
+                                        </h3>
+                                        <p className="text-lg font-bold text-gray-900">
+                                            ${parseFloat(line.cost.totalAmount.amount).toFixed(2)}
+                                        </p>
+                                    </div>
+
+                                    {/* Variant Title if needed */}
+                                    {line.merchandise.title !== 'Default Title' && (
+                                        <p className="text-sm text-gray-500 mb-4">{line.merchandise.title}</p>
+                                    )}
+
+                                    <div className="mt-auto flex justify-between items-center">
+                                        {/* Quantity Selector */}
+                                        <div className="flex items-center border border-gray-200 rounded bg-white">
+                                            <fetcher.Form method="POST" className="contents">
+                                                <input type="hidden" name="action" value="update" />
+                                                <input type="hidden" name="lineId" value={line.id} />
+                                                <input type="hidden" name="quantity" value={Math.max(1, line.quantity - 1)} />
+                                                <button type="submit" className="px-3 py-1 text-gray-500 hover:text-gray-800 hover:bg-gray-50 transition-colors">-</button>
+                                            </fetcher.Form>
+                                            <span className="px-3 py-1 text-sm font-semibold text-gray-900 min-w-[2rem] text-center border-x border-gray-100">
+                                                {line.quantity}
+                                            </span>
+                                            <fetcher.Form method="POST" className="contents">
+                                                <input type="hidden" name="action" value="update" />
+                                                <input type="hidden" name="lineId" value={line.id} />
+                                                <input type="hidden" name="quantity" value={line.quantity + 1} />
+                                                <button type="submit" className="px-3 py-1 text-gray-500 hover:text-gray-800 hover:bg-gray-50 transition-colors">+</button>
+                                            </fetcher.Form>
+                                        </div>
+
+                                        {/* Remove Link */}
+                                        <fetcher.Form method="POST">
+                                            <input type="hidden" name="action" value="remove" />
+                                            <input type="hidden" name="lineId" value={line.id} />
+                                            <button type="submit" className="text-sm text-gray-500 hover:text-red-600 underline transition-colors">
+                                                Remove
+                                            </button>
+                                        </fetcher.Form>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Order Summary Column */}
+                    <div className="lg:col-span-1 bg-white rounded-lg border border-gray-100 shadow-sm p-6 sticky top-24">
+                        <h2 className="text-lg font-bold text-gray-900 mb-4">Order Summary</h2>
+                        <div className="w-full h-px bg-gray-200 mb-4"></div>
+
+                        <div className="flex justify-between items-center mb-3">
+                            <span className="text-gray-600 text-sm">Subtotal</span>
+                            <span className="font-bold text-gray-900 text-sm">
+                                ${parseFloat(cart.cost.subtotalAmount.amount).toFixed(2)}
+                            </span>
                         </div>
+
+                        <div className="w-full h-px bg-gray-100 mb-4"></div>
+
+                        <div className="flex justify-between items-center mb-6">
+                            <span className="text-gray-900 font-bold text-base">Total</span>
+                            <span className="text-gray-900 font-bold text-base">
+                                ${parseFloat(cart.cost.totalAmount.amount).toFixed(2)}
+                            </span>
+                        </div>
+
+                        <a
+                            href={isLoggedIn ? checkoutUrl : (checkoutUrl || '/account/login')}
+                            className="block w-full bg-[#d6001c] hover:bg-[#b50018] text-white text-center font-bold py-3.5 rounded transition-colors shadow-sm"
+                        >
+                            Checkout
+                        </a>
+
+                        <Link
+                            to="/buy-prolock"
+                            className="block text-center text-sm text-gray-500 mt-4 hover:text-gray-800 underline decoration-gray-300 underline-offset-4 transition-colors"
+                        >
+                            Continue Shopping
+                        </Link>
                     </div>
                 </div>
-
-                <div className="flex items-center justify-between mt-6">
-                    <div className="flex items-center bg-gray-50 rounded-lg border border-gray-200 p-1">
-                        <fetcher.Form method="post">
-                            <input type="hidden" name="action" value="update_line" />
-                            <input type="hidden" name="lineId" value={line.id} />
-                            <input type="hidden" name="quantity" value={optimisticQuantity - 1} />
-                            <button
-                                type="submit"
-                                aria-label="Decrease quantity"
-                                disabled={optimisticQuantity <= 1}
-                                className="w-8 h-8 flex items-center justify-center rounded bg-white shadow-sm text-gray-600 hover:text-red-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                                onClick={(e) => {
-                                    if (optimisticQuantity <= 1) {
-                                        e.preventDefault();
-                                    }
-                                }}
-                            >
-                                -
-                            </button>
-                        </fetcher.Form>
-                        <span className="w-10 text-center font-bold text-gray-900">{optimisticQuantity}</span>
-                        <fetcher.Form method="post">
-                            <input type="hidden" name="action" value="update_line" />
-                            <input type="hidden" name="lineId" value={line.id} />
-                            <input type="hidden" name="quantity" value={optimisticQuantity + 1} />
-                            <button
-                                type="submit"
-                                aria-label="Increase quantity"
-                                className="w-8 h-8 flex items-center justify-center rounded bg-white shadow-sm text-gray-600 hover:text-green-600 hover:bg-gray-50 transition-all"
-                            >
-                                +
-                            </button>
-                        </fetcher.Form>
-                    </div>
-
-                    <fetcher.Form method="post">
-                        <input type="hidden" name="action" value="remove_line" />
-                        <input type="hidden" name="lineId" value={line.id} />
-                        <button type="submit" className="text-sm font-medium text-gray-500 hover:text-red-600 underline transition-colors">
-                            Remove
-                        </button>
-                    </fetcher.Form>
-                </div>
-            </div>
-        </li>
+            )}
+        </div>
     );
 }

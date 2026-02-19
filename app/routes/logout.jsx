@@ -5,15 +5,13 @@ import { redirect } from 'react-router';
  * Clears the Shopify Customer Account session and redirects to home.
  */
 export async function action({ context }) {
-    const response = await context.customerAccount.logout();
-
-    response.headers.append(
-        'Set-Cookie',
-        await context.session.commit()
-    );
+    const { session } = context;
+    session.unset('customerAccessToken');
 
     return redirect('/login', {
-        headers: response.headers,
+        headers: {
+            'Set-Cookie': await session.commit(),
+        },
     });
 }
 

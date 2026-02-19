@@ -1,59 +1,39 @@
 import { redirect, Form, useLoaderData, useNavigation } from 'react-router';
+import { CUSTOMER_QUERY } from '~/graphql/customer/queries';
 
 /**
  * Account Page Loader
- * Checks if the user is already logged in.
+ * Checks if the user is already logged in via session token.
  */
 export async function loader({ context }) {
-    const isLoggedIn = await context.customerAccount.isLoggedIn();
+    const customerAccessToken = await context.session.get('customerAccessToken');
 
-    if (!isLoggedIn) {
+    if (!customerAccessToken) {
         throw redirect('/login');
     }
 
-    const { data } = await context.customerAccount.query(CUSTOMER_QUERY);
-    const customer = data?.customer;
+    const { customer } = await context.storefront.query(CUSTOMER_QUERY, {
+        variables: { customerAccessToken },
+        cache: context.storefront.CacheNone(),
+    });
+
+    if (!customer) {
+        throw redirect('/login');
+    }
+
     return { customer };
 }
 
-const CUSTOMER_QUERY = `#graphql
-  query AccountCustomerDetails {
-    customer {
-      id
-      firstName
-      lastName
-      emailAddress {
-        emailAddress
-      }
-      phoneNumber {
-        phoneNumber
-      }
-      defaultAddress {
-        address1
-        address2
-        city
-        province
-        zip
-        country
-      }
-    }
-  }
-`;
-
 /**
  * Account Page Action
- * Handles the login trigger.
+ * Handles logout redirect.
  */
 export async function action({ context }) {
-    try {
-        console.log('Initiating Shopify Login...');
-        const response = await context.customerAccount.login();
-        response.headers.append('Set-Cookie', await context.session.commit());
-        return response;
-    } catch (error) {
-        console.error('Account action error:', error);
-        return { error: error.message || 'Login initialization failed.' };
-    }
+    const { session } = context;
+    session.unset('customerAccessToken');
+    return redirect('/login', {
+        headers: { 'Set-Cookie': await session.commit() },
+    });
 }
 
 export default function Account() {
@@ -74,21 +54,9 @@ export default function Account() {
                     </div>
                     <div className="mt-8 pt-8 border-t border-white/20">
                         <p className="text-xs opacity-50 uppercase tracking-widest mb-4">Account Security</p>
-                        <p className="font-mono text-sm opacity-80">{customer.emailAddress?.emailAddress}</p>
-                        {customer.phoneNumber?.phoneNumber && (
-                            <p className="font-mono text-sm opacity-80 mt-1">{customer.phoneNumber.phoneNumber}</p>
-                        )}
-
-                        {customer.defaultAddress && (
-                            <div className="mt-6 pt-6 border-t border-white/10">
-                                <p className="text-xs opacity-50 uppercase tracking-widest mb-2">Primary Address</p>
-                                <div className="font-mono text-sm opacity-80 whitespace-pre-line">
-                                    {customer.defaultAddress.address1}
-                                    {customer.defaultAddress.address2 ? `\n${customer.defaultAddress.address2}` : ''}
-                                    {`\n${customer.defaultAddress.city}, ${customer.defaultAddress.province} ${customer.defaultAddress.zip}`}
-                                    {`\n${customer.defaultAddress.country}`}
-                                </div>
-                            </div>
+                        <p className="font-mono text-sm opacity-80">{customer.email}</p>
+                        {customer.phone && (
+                            <p className="font-mono text-sm opacity-80 mt-1">{customer.phone}</p>
                         )}
                     </div>
                 </div>

@@ -1,15 +1,14 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import './Header.module.css';
+import { Link } from 'react-router';
 
 /**
  * @param {Object} props
  * @param {number} props.cartCount
+ * @param {Function} props.onCartClick
  */
-export default function Header({ cartCount }) {
+export default function Header({ cartCount, onCartClick }) {
   return (
     <header className="bg-black text-white border-b border-zinc-900 sticky top-0 z-50 backdrop-blur-md bg-black/90">
-      <div className="w-[80%] mx-auto grid grid-cols-3 items-center h-20 md:h-28">
+      <div className="w-[85%] mx-auto grid grid-cols-3 items-center h-20 md:h-28">
         {/* Left: Mobile Menu Button (Hidden on Desktop) */}
         <div className="flex items-center">
           <button className="md:hidden text-white mr-4">
@@ -32,7 +31,7 @@ export default function Header({ cartCount }) {
 
         {/* Center: Logo */}
         <div className="text-center flex justify-center w-full">
-          <Link to="/" className="text-5xl md:text-6xl font-black tracking-tighter italic text-white flex items-center justify-center">
+          <Link to="/" prefetch="intent" className="text-5xl md:text-6xl font-black tracking-tighter italic text-white flex items-center justify-center">
             PROLOCK
             <span className="text-xs align-top ml-1 mt-1">TM</span>
           </Link>
@@ -41,7 +40,7 @@ export default function Header({ cartCount }) {
         {/* Right: Account & Cart Icons */}
         <ul className="flex justify-end items-center gap-6">
           <li>
-            <Link to="/account" className="text-white hover:text-gray-300 transition-colors">
+            <Link to="/dashboard" className="text-white hover:text-gray-300 transition-colors">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -59,7 +58,10 @@ export default function Header({ cartCount }) {
             </Link>
           </li>
           <li className="relative">
-            <Link to="/cart" className="text-white hover:text-gray-300 transition-colors">
+            <button
+              onClick={onCartClick}
+              className="text-white hover:text-gray-300 transition-colors focus:outline-none relative group"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -75,11 +77,11 @@ export default function Header({ cartCount }) {
                 />
               </svg>
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full shadow-lg shadow-red-600/40 transform group-hover:scale-110 transition-transform">
                   {cartCount}
                 </span>
               )}
-            </Link>
+            </button>
           </li>
         </ul>
       </div>

@@ -12,7 +12,9 @@ import { hydrateRoot } from 'react-dom/client';
 import { HydratedRouter } from 'react-router/dom';
 
 // Hydrate the entire document with the React Router
+console.log('HYDRATION_STARTING');
 hydrateRoot(
   document,
   <HydratedRouter />
 );
+console.log('HYDRATION_CALL_DONE');

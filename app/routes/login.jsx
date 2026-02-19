@@ -1,11 +1,13 @@
 import { Form, useActionData, useNavigation, useSearchParams } from 'react-router';
-import { redirect } from 'react-router';
+import { redirect, data } from 'react-router';
+import { CUSTOMER_ACCESS_TOKEN_CREATE_MUTATION, CUSTOMER_CREATE_MUTATION } from '~/graphql/customer/mutations';
 
 export async function loader({ context, request }) {
-  if (await context.customerAccount.isLoggedIn()) {
+  const customerAccessToken = await context.session.get('customerAccessToken');
+  if (customerAccessToken) {
     const url = new URL(request.url);
     const returnTo = url.searchParams.get('return_to');
-    throw redirect(returnTo || '/account');
+    return redirect(returnTo || '/dashboard');
   }
   return null;
 }
@@ -13,50 +15,82 @@ export async function loader({ context, request }) {
 export async function action({ context, request }) {
   const formData = await request.formData();
   const intent = formData.get('intent');
+  const { storefront, session } = context;
 
   try {
     if (intent === 'login') {
-      const returnTo = formData.get('return_to');
       const email = formData.get('email');
+      const password = formData.get('password');
+      const returnTo = formData.get('return_to') || '/dashboard';
 
-      const response = await context.customerAccount.login({
-        returnTo: returnTo || '/account',
-        loginHint: email || undefined,
+      if (!email || !password) {
+        return data({ error: 'Please provide both email and password.' }, { status: 400 });
+      }
+
+      const { customerAccessTokenCreate } = await storefront.mutate(CUSTOMER_ACCESS_TOKEN_CREATE_MUTATION, {
+        variables: {
+          input: { email, password },
+        },
       });
 
-      response.headers.append('Set-Cookie', await context.session.commit());
+      if (customerAccessTokenCreate?.customerUserErrors?.length > 0) {
+        return data({ error: customerAccessTokenCreate.customerUserErrors[0].message }, { status: 400 });
+      }
 
-      return response;
+      const { accessToken } = customerAccessTokenCreate.customerAccessToken;
+      session.set('customerAccessToken', accessToken);
+
+      return redirect(returnTo, {
+        headers: {
+          'Set-Cookie': await session.commit(),
+        },
+      });
     }
 
     if (intent === 'signup') {
-      const returnTo = formData.get('return_to');
+      const email = formData.get('email');
+      const password = formData.get('password');
+      const firstName = formData.get('firstName');
+      const lastName = formData.get('lastName');
+      const returnTo = formData.get('return_to') || '/dashboard';
 
-      const response = await context.customerAccount.login({
-        returnTo: returnTo || '/account',
+      if (!email || !password) {
+        return data({ error: 'Email and password are required for signup.' }, { status: 400 });
+      }
+
+      const { customerCreate } = await storefront.mutate(CUSTOMER_CREATE_MUTATION, {
+        variables: {
+          input: { email, password, firstName, lastName },
+        },
       });
 
-      response.headers.append('Set-Cookie', await context.session.commit());
+      if (customerCreate?.customerUserErrors?.length > 0) {
+        return data({ error: customerCreate.customerUserErrors[0].message }, { status: 400 });
+      }
 
-      return response;
+      // After signup, log them in automatically
+      const { customerAccessTokenCreate } = await storefront.mutate(CUSTOMER_ACCESS_TOKEN_CREATE_MUTATION, {
+        variables: {
+          input: { email, password },
+        },
+      });
+
+      if (customerAccessTokenCreate?.customerAccessToken) {
+        session.set('customerAccessToken', customerAccessTokenCreate.customerAccessToken.accessToken);
+        return redirect(returnTo, {
+          headers: {
+            'Set-Cookie': await session.commit(),
+          },
+        });
+      }
+
+      return redirect('/login?registered=true');
     }
 
     throw new Error('Invalid intent');
   } catch (error) {
-    if (error instanceof Response) {
-      // It's a redirect, so re-throw it!
-      throw error;
-    }
-    console.error('Auth error full:', error);
-
-    return {
-      error: `Authentication failed: ${error.message || 'Unknown error'}`,
-      debugInfo: {
-        clientId: context.env?.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID || 'MISSING',
-        apiUrl: context.env?.PUBLIC_CUSTOMER_ACCOUNT_API_URL || 'MISSING',
-        errorStack: error.stack
-      }
-    };
+    console.error('Auth error:', error);
+    return data({ error: error.message || 'Authentication failed' }, { status: 500 });
   }
 }
 
@@ -68,68 +102,149 @@ export default function Login() {
   const returnTo = searchParams.get('return_to');
   const isSubmitting = navigation.state === 'submitting';
   const error = actionData?.error;
-  const debugInfo = actionData?.debugInfo;
+  const registered = searchParams.get('registered') === 'true';
 
   return (
-    <div className="min-h-screen bg-[#b3b3b3] flex items-center justify-center py-12 px-4">
-      <div className="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 shadow-2xl rounded-3xl overflow-hidden bg-white">
-        <div className="p-12 flex flex-col justify-center">
-          <h2 className="text-sm font-black uppercase tracking-[0.2em] text-red-600 mb-2 italic">
-            Existing Member
-          </h2>
-          <h1 className="text-4xl font-black text-[#1a1a1a] italic skew-x-[-10deg] mb-6">
-            SIGN IN
-          </h1>
+    <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center py-12 px-4">
+      <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 shadow-2xl rounded-[2rem] overflow-hidden bg-white">
+        {/* Sign In Section */}
+        <div className="p-10 md:p-16 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-gray-100">
+          <div className="mb-10">
+            <h2 className="text-red-600 font-black uppercase tracking-[0.3em] text-xs mb-3 italic">
+              Welcome Back
+            </h2>
+            <h1 className="text-5xl font-black text-[#111] italic skew-x-[-10deg] leading-none mb-2">
+              SIGN IN
+            </h1>
+            <p className="text-gray-500 font-medium tracking-tight">Access your Prolock account</p>
+          </div>
 
-          <Form method="post" action="/login" className="space-y-6">
+          <Form method="post" className="space-y-5">
             <input type="hidden" name="intent" value="login" />
             {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
 
-            <input
-              name="email"
-              type="email"
-              autoComplete="email"
-              placeholder="Email address (optional)"
-              className="w-full px-3 py-4 border border-gray-300 focus:ring-red-500 focus:border-red-500"
-            />
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Email</label>
+              <input
+                name="email"
+                type="email"
+                required
+                placeholder="email@example.com"
+                className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all font-medium"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Password</label>
+              <input
+                name="password"
+                type="password"
+                required
+                placeholder="••••••••"
+                className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all font-medium"
+              />
+            </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-black text-white py-5 font-black uppercase tracking-widest hover:bg-red-600 transition"
+              className="w-full bg-[#111] text-white py-5 rounded-xl font-black uppercase tracking-widest hover:bg-red-600 transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-black/10 mt-4 disabled:opacity-50"
             >
-              {isSubmitting ? 'Redirecting...' : 'Sign In'}
+              {isSubmitting ? 'Authenticating...' : 'Sign In'}
             </button>
           </Form>
 
           {error && (
-            <div className="mt-4 bg-red-50 border-2 border-red-600 p-4 rounded text-center">
-              <p className="text-red-900 font-bold text-lg mb-2">Login Failed</p>
-              <p className="text-red-700 font-mono text-sm break-words">{error}</p>
+            <div className="mt-8 bg-red-50 border border-red-100 p-4 rounded-xl flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></div>
+              <p className="text-red-700 font-bold text-sm">{error}</p>
+            </div>
+          )}
+
+          {registered && (
+            <div className="mt-8 bg-green-50 border border-green-100 p-4 rounded-xl flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-green-600"></div>
+              <p className="text-green-700 font-bold text-sm">Account created! Please sign in.</p>
             </div>
           )}
         </div>
 
-        <div className="bg-[#1a1a1a] p-12 flex flex-col justify-center text-white">
-          <h2 className="text-sm font-black uppercase tracking-[0.2em] text-red-500 mb-2 italic">
-            New Here?
-          </h2>
-          <h1 className="text-4xl font-black italic skew-x-[-10deg] mb-6">
-            CREATE ACCOUNT
-          </h1>
+        {/* Create Account Section */}
+        <div className="bg-[#111] p-10 md:p-16 flex flex-col justify-center text-white relative overflow-hidden">
+          {/* Subtle geometric background decoration */}
+          <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-red-600/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-[-10%] left-[-10%] w-64 h-64 bg-red-600/5 rounded-full blur-3xl"></div>
 
-          <Form method="post">
+          <div className="mb-10 relative z-10">
+            <h2 className="text-red-500 font-black uppercase tracking-[0.3em] text-xs mb-3 italic">
+              New Member
+            </h2>
+            <h1 className="text-5xl font-black italic skew-x-[-10deg] leading-none mb-2">
+              JOIN PRO<span className="text-red-600">LOCK</span>
+            </h1>
+            <p className="text-white/50 font-medium tracking-tight">Register for exclusive benefits</p>
+          </div>
+
+          <Form method="post" className="space-y-4 relative z-10">
             <input type="hidden" name="intent" value="signup" />
             {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">First Name</label>
+                <input
+                  name="firstName"
+                  type="text"
+                  placeholder="John"
+                  className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all font-medium text-white placeholder:text-white/20"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">Last Name</label>
+                <input
+                  name="lastName"
+                  type="text"
+                  placeholder="Doe"
+                  className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all font-medium text-white placeholder:text-white/20"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">Email</label>
+              <input
+                name="email"
+                type="email"
+                required
+                placeholder="email@example.com"
+                className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all font-medium text-white placeholder:text-white/20"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">Password</label>
+              <input
+                name="password"
+                type="password"
+                required
+                placeholder="••••••••"
+                className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all font-medium text-white placeholder:text-white/20"
+              />
+            </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full border-2 border-white/20 py-5 font-black uppercase tracking-widest hover:bg-white hover:text-black transition"
+              className="w-full bg-[#fcfcfc] text-[#111] py-5 rounded-xl font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-xl shadow-white/5 mt-4 disabled:opacity-50"
             >
-              {isSubmitting ? 'Redirecting...' : 'Register Now'}
+              {isSubmitting ? 'Registering...' : 'Create Account'}
             </button>
           </Form>
+
+          <p className="mt-8 text-white/30 text-[10px] font-medium text-center relative z-10 leading-relaxed">
+            By creating an account, you agree to our <br />
+            <a href="/policies/terms-of-service" className="text-white/60 underline hover:text-red-500 transition-colors">Terms of Service</a> and <a href="/policies/privacy-policy" className="text-white/60 underline hover:text-red-500 transition-colors">Privacy Policy</a>.
+          </p>
         </div>
       </div>
     </div>

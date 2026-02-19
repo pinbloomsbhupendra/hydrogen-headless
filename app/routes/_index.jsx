@@ -1,5 +1,5 @@
-import Hero from '../components/Hero/Hero';
-import Promo from '../components/Article/Article';
+import Hero from '~/components/Hero';
+import Promo from '~/components/Promo';
 
 /**
  * Index Route Component

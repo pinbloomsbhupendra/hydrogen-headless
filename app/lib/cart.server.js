@@ -1,4 +1,5 @@
-import { CART_QUERY, CART_CREATE, CART_LINES_ADD, CART_LINES_UPDATE, CART_LINES_REMOVE } from '../graphql/cart/cart-queries';
+import { CART_QUERY } from '../graphql/cart/queries';
+import { CART_CREATE, CART_LINES_ADD, CART_LINES_UPDATE, CART_LINES_REMOVE } from '../graphql/cart/mutations';
 
 /**
  * @param {Request} request

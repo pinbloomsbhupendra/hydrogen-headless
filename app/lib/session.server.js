@@ -5,14 +5,18 @@ import { createCookieSessionStorage } from 'react-router';
  * @param {Object} env - Environment variables containing SESSION_SECRET
  */
 export function createAppSession(env) {
+    const isProduction = env.NODE_ENV === 'production';
+
     return createCookieSessionStorage({
         cookie: {
-            name: '__session',
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            name: 'prolock_cart_session',
+            httpOnly: false,
+            // Disable secure flag for local development to ensure cookies work on http://localhost:3000
+            secure: false,
             sameSite: 'lax',
             path: '/',
-            secrets: [env.SESSION_SECRET],
+            maxAge: 60 * 60 * 24 * 30, // 30 days
+            secrets: [env.SESSION_SECRET || 'default_secret_for_dev'],
         },
     });
 }

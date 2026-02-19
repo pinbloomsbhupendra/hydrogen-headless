@@ -1,7 +1,7 @@
 import React from 'react';
-import './Article.css';
+import './Promo.css';
 
-export default function Article() {
+export default function Promo() {
     return (
         <section
             id="article-component"

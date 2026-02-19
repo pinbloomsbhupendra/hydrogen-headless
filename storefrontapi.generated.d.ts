@@ -29,11 +29,11 @@ export type ProductImageQuery = {
   };
 };
 
-export type ProductDetailsGuardianQueryVariables = StorefrontAPI.Exact<{
+export type ProductDetailsQueryVariables = StorefrontAPI.Exact<{
   handle: StorefrontAPI.Scalars['String']['input'];
 }>;
 
-export type ProductDetailsGuardianQuery = {
+export type ProductDetailsQuery = {
   product?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.Product, 'id' | 'title' | 'descriptionHtml'> & {
       priceRange: {
@@ -41,39 +41,7 @@ export type ProductDetailsGuardianQuery = {
       };
       images: {
         nodes: Array<
-          Pick<
-            StorefrontAPI.Image,
-            'id' | 'url' | 'altText' | 'width' | 'height'
-          >
-        >;
-      };
-      variants: {
-        nodes: Array<
-          Pick<StorefrontAPI.ProductVariant, 'id' | 'availableForSale'> & {
-            price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
-          }
-        >;
-      };
-    }
-  >;
-};
-
-export type ProductDetailsProlockQueryVariables = StorefrontAPI.Exact<{
-  handle: StorefrontAPI.Scalars['String']['input'];
-}>;
-
-export type ProductDetailsProlockQuery = {
-  product?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.Product, 'id' | 'title' | 'descriptionHtml'> & {
-      priceRange: {
-        minVariantPrice: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
-      };
-      images: {
-        nodes: Array<
-          Pick<
-            StorefrontAPI.Image,
-            'id' | 'url' | 'altText' | 'width' | 'height'
-          >
+          Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
         >;
       };
       variants: {
@@ -96,13 +64,9 @@ interface GeneratedQueryTypes {
     return: ProductImageQuery;
     variables: ProductImageQueryVariables;
   };
-  '#graphql\n  query ProductDetailsGuardian($handle: String!) {\n    product(handle: $handle) {\n      id\n      title\n      descriptionHtml\n      priceRange {\n        minVariantPrice {\n          amount\n          currencyCode\n        }\n      }\n      images(first: 5) {\n        nodes {\n          id\n          url\n          altText\n          width\n          height\n        }\n      }\n      variants(first: 1) {\n        nodes {\n          id\n          availableForSale\n          price {\n            amount\n            currencyCode\n          }\n        }\n      }\n    }\n  }\n': {
-    return: ProductDetailsGuardianQuery;
-    variables: ProductDetailsGuardianQueryVariables;
-  };
-  '#graphql\n  query ProductDetailsProlock($handle: String!) {\n    product(handle: $handle) {\n      id\n      title\n      descriptionHtml\n      priceRange {\n        minVariantPrice {\n          amount\n          currencyCode\n        }\n      }\n      images(first: 5) {\n        nodes {\n          id\n          url\n          altText\n          width\n          height\n        }\n      }\n      variants(first: 10) {\n        nodes {\n          id\n          availableForSale\n          price {\n            amount\n            currencyCode\n          }\n        }\n      }\n    }\n  }\n': {
-    return: ProductDetailsProlockQuery;
-    variables: ProductDetailsProlockQueryVariables;
+  '#graphql\n  query ProductDetails($handle: String!) {\n    product(handle: $handle) {\n      id\n      title\n      descriptionHtml\n      priceRange {\n        minVariantPrice {\n          amount\n          currencyCode\n        }\n      }\n      images(first: 5) {\n        nodes {\n          url\n          altText\n          width\n          height\n        }\n      }\n      variants(first: 10) {\n        nodes {\n          id\n          availableForSale\n          price {\n            amount\n            currencyCode\n          }\n        }\n      }\n    }\n  }\n': {
+    return: ProductDetailsQuery;
+    variables: ProductDetailsQueryVariables;
   };
 }
 

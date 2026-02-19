@@ -1,58 +1,95 @@
 import { redirect, useLoaderData, useActionData } from 'react-router';
 import WarrantyForm from '../components/WarrantyForm';
-import { getOrderBySerial, checkWarrantyStatus, registerWarranty } from '../lib/actions';
-import { submitToHubSpot } from '../graphql/hubspot/hubspot-forms';
+import { verifyCustomerOrder, checkWarrantyStatus, registerWarranty } from '../lib/actions';
+import { submitToHubSpot } from '../graphql/hubspot/mutations';
+import { CUSTOMER_QUERY } from '../graphql/customer/queries';
+
+/* ======================================================
+   HELPERS – pull Admin API credentials from env
+====================================================== */
+function getAdminCreds(context) {
+    const env = context.env || process.env || {};
+    const adminToken =
+        env.SHOPIFY_ADMIN_API_TOKEN ||
+        process.env?.SHOPIFY_ADMIN_API_TOKEN ||
+        null;
+    const shopDomain =
+        env.PUBLIC_STORE_DOMAIN ||
+        process.env?.PUBLIC_STORE_DOMAIN ||
+        null;
+
+    console.log('[getAdminCreds] Token present:', !!adminToken, 'Domain:', shopDomain);
+
+    return { adminToken, shopDomain };
+}
 
 /* ======================================================
    LOADER
 ====================================================== */
 export async function loader({ request, context }) {
     const url = new URL(request.url);
-    const serial = url.searchParams.get('serial')?.toUpperCase().trim();
+    const orderNumber = url.searchParams.get('orderNumber');
+    const email = url.searchParams.get('email');
+    const customerAccessToken = await context.session.get('customerAccessToken');
 
     let customerId = null;
     let warrantyStatus = {};
     let verifiedProduct = null;
 
-    try {
-        const isLoggedIn = await context.customerAccount.isLoggedIn();
+    const { adminToken, shopDomain } = getAdminCreds(context);
 
-        if (isLoggedIn) {
-            const { data } = await context.customerAccount.query(`
-                query {
-                    customer { id }
+    const isNewRegistration = url.searchParams.get('new') === 'true';
+
+    /* ── Customer lookup ─────────────────────────────────── */
+    if (customerAccessToken) {
+        try {
+            const { customer } = await context.storefront.query(CUSTOMER_QUERY, {
+                variables: { customerAccessToken },
+                cache: context.storefront.CacheNone(),
+            });
+
+            customerId = customer?.id || null;
+
+            if (customerId && adminToken && !isNewRegistration) {
+                // Using Admin API to check metafield status
+                const status = await checkWarrantyStatus(customerId, adminToken, shopDomain);
+
+                // If registered, check if it's the SAME order
+                if (status.registered && status.warranty) {
+                    const existingOrder = status.warranty.orderNumber || status.warranty.orderId;
+                    // If the existing warranty is for a DIFFERENT order, allow new registration (overwrite)
+                    // We only block if it's the SAME order
+                    if (orderNumber && existingOrder && existingOrder.toString() !== orderNumber.toString()) {
+                        // Different order -> Treat as NOT registered (so form shows)
+                        warrantyStatus = {};
+                    } else {
+                        warrantyStatus = status;
+                    }
                 }
-            `);
-
-            customerId = data?.customer?.id || null;
-
-            if (customerId) {
-                warrantyStatus = await checkWarrantyStatus(customerId);
             }
+        } catch (err) {
+            console.error('[loader] Customer fetch failed:', err);
         }
-    } catch (err) {
-        console.error('Login check failed:', err);
     }
 
-    if (serial) {
+    /* ── Order verification (Admin GraphQL API) ──────────── */
+    if (orderNumber && email && adminToken) {
         try {
-            const result = await getOrderBySerial(serial);
-
-            if (Array.isArray(result) && result.length > 0) {
-                verifiedProduct = result[0];
-            } else if (result && !Array.isArray(result)) {
+            const result = await verifyCustomerOrder(orderNumber, email, adminToken, shopDomain);
+            if (result && !result.error) {
                 verifiedProduct = result;
             }
         } catch (err) {
-            console.error('Serial lookup failed:', err);
+            console.error('[loader] Order verification failed:', err);
         }
     }
 
     return {
         customerId,
         verifiedProduct,
-        serial,
-        ...warrantyStatus
+        orderNumber,
+        email,
+        ...warrantyStatus,
     };
 }
 
@@ -62,24 +99,28 @@ export async function loader({ request, context }) {
 export async function action({ request, context }) {
     const formData = await request.formData();
     const actionType = formData.get('actionType');
+    const { adminToken, shopDomain } = getAdminCreds(context);
 
     /* -----------------------------
-       VERIFY SERIAL
+       VERIFY ORDER
     ----------------------------- */
     if (actionType === 'verify') {
-        const serial = formData.get('serial')?.toUpperCase().trim();
+        const orderNumber = formData.get('orderNumber')?.trim();
+        const email = formData.get('email')?.trim();
 
-        if (!serial) {
-            return { error: 'SERIAL NUMBER IS REQUIRED.' };
+        if (!orderNumber || !email) {
+            return { error: 'ORDER NUMBER AND EMAIL ARE REQUIRED.' };
         }
 
-        const result = await getOrderBySerial(serial);
+        const result = await verifyCustomerOrder(orderNumber, email, adminToken, shopDomain);
 
-        if (!result || (Array.isArray(result) && result.length === 0)) {
-            return { error: 'INVALID SERIAL NUMBER. PLEASE CHECK AND TRY AGAIN.' };
+        if (!result || result.error) {
+            return {
+                error: result?.error || 'ORDER NOT FOUND OR INVALID. PLEASE CHECK DETAILS.',
+            };
         }
 
-        return redirect(`/register-warranty?serial=${serial}`);
+        return redirect(`/register-warranty?orderNumber=${encodeURIComponent(orderNumber)}&email=${encodeURIComponent(email)}`);
     }
 
     /* -----------------------------
@@ -87,39 +128,46 @@ export async function action({ request, context }) {
     ----------------------------- */
     if (actionType === 'register') {
         const serial = formData.get('serial')?.toUpperCase().trim();
+        const email = formData.get('email');
+        const orderNumber = formData.get('orderNumber');
 
         try {
-            // Get logged in customer (optional)
-            let customerId = null;
+            // Re-verify to get secure IDs (Internal trust)
+            const cryptoVerified = await verifyCustomerOrder(orderNumber, email, adminToken, shopDomain);
 
-            try {
-                const isLoggedIn = await context.customerAccount.isLoggedIn();
-
-                if (isLoggedIn) {
-                    const { data } = await context.customerAccount.query(`
-                        query {
-                            customer { id }
-                        }
-                    `);
-
-                    customerId = data?.customer?.id || null;
-                }
-            } catch (err) {
-                console.error('Customer fetch failed:', err);
+            if (!cryptoVerified || cryptoVerified.error) {
+                return { error: 'Verification failed during registration. Please try again.' };
             }
 
-            /* 1️⃣ SAVE TO INTERNAL BACKEND */
+            const { orderId, customerId: orderCustomerId } = cryptoVerified;
+
+            // Prefer order's customer ID, fallback to logged-in user if available (but usually order exists)
+            // If order has no customer, we can't save metafield to customer.
+            // But verifyCustomerOrder returns customerId if present.
+
+            if (!orderCustomerId) {
+                // This is an edge case: Guest checkout without account creation?
+                // We might need to rely on the Order Tagging then.
+                console.warn('No customer found on order. Proceeding with Order Tagging only.');
+            }
+
+            /* 1️⃣ SAVE TO SHOPIFY (Hydrogen Only - No External Backend) */
+            // We save to Customer Metafield if possible
             const payload = {
-                shopifyCustomerId: customerId,
-                email: formData.get('email'),
+                shopifyCustomerId: orderCustomerId, // The ID to attach the metafield to
+                orderId: orderId,
+                email: email,
                 customerName: `${formData.get('firstName')} ${formData.get('lastName')}`.trim(),
                 productName: formData.get('productTitle'),
                 serial: serial,
                 productImage: formData.get('productImage'),
                 purchaseDate: formData.get('purchaseDate'),
+                orderNumber: orderNumber,
             };
 
-            const result = await registerWarranty(payload);
+            // Call our new "backend-less" function
+            // If shopifyCustomerId is null, this might fail or skip metafield part
+            const result = await registerWarranty(payload, adminToken, shopDomain);
 
             /* 2️⃣ SYNC TO HUBSPOT (NON-BLOCKING) */
             const hubspotKey =
@@ -127,12 +175,11 @@ export async function action({ request, context }) {
                 process.env.HUBSPOT_PRIVATE_ACCESS_KEY;
 
             if (hubspotKey) {
+                console.log('[action] Attempting HubSpot Sync...', { hasKey: true });
                 try {
-                    // Sanitize key
                     const cleanKey = hubspotKey.replace(/^Bearer\s+/i, '');
-
                     const hubspotData = {
-                        email: formData.get('email'),
+                        email: email,
                         firstName: formData.get('firstName'),
                         lastName: formData.get('lastName'),
                         phone: formData.get('phone'),
@@ -143,22 +190,21 @@ export async function action({ request, context }) {
                         country: formData.get('country'),
                         purchaseDate: formData.get('purchaseDate'),
                         serial: serial,
-                        warranty_number: result?.warranty?.warrantyNumber
+                        product_name: formData.get('productTitle'),
+                        warranty_number: result?.warranty?.warrantyNumber, // generated in actions.js
+                        order_number: orderNumber
                     };
-
                     await submitToHubSpot(hubspotData, cleanKey);
-                    console.log('HubSpot Sync Successful');
                 } catch (hsError) {
-                    console.error('HubSpot Sync Failed (Non-blocking):', hsError);
+                    console.error('[action] HubSpot Sync Failed:', hsError);
+                    return { error: `HubSpot Sync Failed: ${hsError.message}` };
                 }
-            } else {
-                console.warn('HUBSPOT_PRIVATE_ACCESS_KEY missing.');
             }
 
             return redirect('/thank-you');
 
         } catch (error) {
-            console.error('Warranty registration failed:', error);
+            console.error('[action] Registration failed:', error);
             return { error: error.message || 'Registration failed.' };
         }
     }
@@ -170,7 +216,7 @@ export async function action({ request, context }) {
    COMPONENT
 ====================================================== */
 export default function WarrantyPage() {
-    const { customerId, registered, warranty, verifiedProduct, serial } =
+    const { customerId, registered, warranty, verifiedProduct, orderNumber, email } =
         useLoaderData();
 
     const actionData = useActionData();
@@ -183,7 +229,8 @@ export default function WarrantyPage() {
                     actionData={actionData || { registered, warranty }}
                     productData={verifiedProduct}
                     customerId={customerId}
-                    serial={serial}
+                    initialOrderNumber={orderNumber}
+                    initialEmail={email}
                 />
 
                 <div className="mt-12 text-center max-w-2xl px-4 pb-12">
