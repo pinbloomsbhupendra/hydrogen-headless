@@ -31,10 +31,16 @@ export async function action({ request, context }) {
         const result = await cart.addLines([{ merchandiseId: variantId, quantity }]);
         console.log('[Guardian Action] Cart result updated. Total quantity:', result?.cart?.totalQuantity);
 
+        // Manually ensure session is updated if a new cart was created
+        if (result?.cart?.id) {
+            session.set('cartId', result.cart.id);
+        }
+
+        const headers = new Headers();
+        headers.append('Set-Cookie', await session.commit());
+
         return data({ success: true, cart: result?.cart }, {
-            headers: {
-                'Set-Cookie': await session.commit(),
-            }
+            headers
         });
     } catch (error) {
         console.error('[Guardian Action] Error adding to cart:', error);
