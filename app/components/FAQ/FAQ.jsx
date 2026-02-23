@@ -1,5 +1,3 @@
-import styles from './FAQ.module.css';
-
 export default function FAQ() {
     return (
         <section className="w-[80%] mx-auto py-12">

@@ -72,7 +72,7 @@ const ComparisonTable = ({ prolock, guardian }) => {
 
                 {/* Left Column: PROLOCK */}
                 <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col items-center relative bg-gray-200 border-b border-gray-300 md:border-b-0 md:border-r">
-                    <img src={prolockData.images.nodes[0]?.url || "/prolock.png"} alt={prolockData.title} className="h-32 md:h-40 object-contain mb-8" />
+                    <img src={prolockData.images.nodes[0]?.url || "/prolock.png"} alt={prolockData.title} className="h-68 md:h-80 object-contain mb-8" />
                     <h2 className="text-3xl font-black uppercase tracking-wider text-center flex items-center justify-center min-h-[4.5rem] leading-tight mb-2">
                         {prolockData.title}
                     </h2>
@@ -97,7 +97,7 @@ const ComparisonTable = ({ prolock, guardian }) => {
 
                 {/* Right Column: PROLOCK GUARDIAN */}
                 <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col items-center relative bg-gray-400">
-                    <img src={guardianData.images.nodes[0]?.url || "/prolock guardian.png"} alt={guardianData.title} className="h-32 md:h-40 object-contain mb-8" />
+                    <img src={guardianData.images.nodes[0]?.url || "/prolock guardian.png"} alt={guardianData.title} className="h-68 md:h-80 object-contain mb-8" />
                     <h2 className="text-3xl font-black uppercase tracking-wider text-center flex items-center justify-center min-h-[4.5rem] leading-tight mb-2 text-black">
                         {guardianData.title}
                     </h2>
@@ -123,10 +123,10 @@ const ComparisonTable = ({ prolock, guardian }) => {
             {/* Bottom Packaging Section */}
             <div className="flex flex-col md:flex-row justify-center items-center mt-16 gap-10">
                 <div className="p-6 border border-gray-200 rounded-lg shadow-sm bg-white flex justify-center">
-                    <img src="/img1.png" alt="Prolock Packaging" className="h-64 w-auto object-contain" />
+                    <img src="/img1.png" alt="Prolock Packaging" className="h-80 md:h-96 w-auto object-contain" />
                 </div>
                 <div className="p-6 border border-gray-200 rounded-lg shadow-sm bg-white flex justify-center">
-                    <img src="/img2.png" alt="Prolock Guardian Packaging" className="h-64 w-auto object-contain" />
+                    <img src="/img2.png" alt="Prolock Guardian Packaging" className="h-80 md:h-96 w-auto object-contain" />
                 </div>
             </div>
         </div>
