@@ -15,7 +15,6 @@ import { Link } from 'react-router';
 //  * @example
 //  * <Hero />
 //  */
-import './Hero.css';
 export default function Hero() {
     return (
         <section className="hero w-full relative">
@@ -26,7 +25,7 @@ export default function Hero() {
                 {/* REGISTER WARRANTY - Top center on mobile, right on desktop */}
                 <Link
                     to="/register-warranty"
-                    className="bg-red-600 text-white font-bold italic px-10 py-3 rounded border-4 border-white shadow-lg hover:bg-red-700 transition-colors text-lg w-[90%] max-w-sm md:max-w-none md:w-auto text-center mb-0 md:mb-0 md:order-2"
+                    className="hero-cta w-[90%] max-w-sm md:max-w-none md:w-auto mb-0 md:mb-0 md:order-2"
                 >
                     REGISTER WARRANTY
                 </Link>
@@ -36,16 +35,16 @@ export default function Hero() {
                     Matching styling for visual consistency */}
                 <Link
                     to="/comparison-table"
-                    className="bg-red-600 text-white font-bold italic px-10 py-3 rounded border-4 border-white shadow-lg hover:bg-red-700 transition-colors text-lg w-[90%] max-w-sm md:max-w-none md:w-auto text-center mt-auto mb-20 md:mt-0 md:mb-0 md:order-1"
+                    className="hero-cta w-[90%] max-w-sm md:max-w-none md:w-auto mt-auto mb-20 md:mt-0 md:mb-0 md:order-1"
                 >
                     BUY PROLOCK
                 </Link>
             </div>
 
             {/* Hero Background Image
-                Responsive height: 450px on mobile, 600px on desktop
+                Responsive height: 300px on mobile, 400px on desktop
                 Image positioned to show center-top area for optimal visual impact */}
-            <div className="hero-image w-full h-[450px] md:h-[600px] overflow-hidden">
+            <div className="hero-image w-full h-[300px] md:h-[550px] overflow-hidden">
                 <img
                     src="/car.png"
                     alt="Car with Prolock security system"
@@ -53,18 +52,6 @@ export default function Hero() {
                 />
             </div>
 
-            {/* Product Description Banner
-                Desktop-only section with key product benefits
-                Hidden on mobile to maintain clean, focused CTA presentation */}
-            <div className="hidden md:block w-full bg-red-600 py-4 px-8 text-center">
-                <div className="w-[80%] mx-auto">
-                    <p className="text-white font-bold text-sm md:text-lg uppercase tracking-wide">
-                        THE SPERLING PROLOCK NOT ONLY ACTS AS A VISIBLE DETERRENT
-                        <br />
-                        IT PHYSICALLY PREVENTS THE THIEF DRIVING OFF IN YOUR VEHICLE
-                    </p>
-                </div>
-            </div>
         </section>
     );
 }

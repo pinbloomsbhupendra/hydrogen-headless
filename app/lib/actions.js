@@ -14,7 +14,12 @@ const BACKEND_URL =
 export async function verifyCustomerOrder(orderNumber, email, adminToken, shopDomain) {
     try {
         if (!orderNumber || !email || !adminToken || !shopDomain) {
-            console.error('[verifyCustomerOrder] Missing parameters');
+            console.error('[verifyCustomerOrder] Missing parameters:', {
+                orderNumber: !!orderNumber,
+                email: !!email,
+                adminToken: !!adminToken,
+                shopDomain: !!shopDomain
+            });
             return { error: 'Missing required parameters' };
         }
 

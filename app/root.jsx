@@ -10,7 +10,8 @@ import {
   data,
 } from 'react-router';
 import { useState, useEffect, useRef } from 'react';
-import globalStyles from './styles/global.css?url';
+import './styles/tailwind.css';
+import './styles/custom.css';
 import Navbar from '~/components/Navbar';
 import Footer from '~/components/Footer';
 import CookieConsent from '~/components/CookieConsent';
@@ -31,7 +32,6 @@ export async function loader({ request, context }) {
 
 export function links() {
   return [
-    { rel: 'stylesheet', href: globalStyles },
     { rel: 'icon', type: 'image/png', href: '/logo.png' },
   ];
 }
@@ -83,7 +83,7 @@ export default function App() {
         <CartDrawer
           isOpen={isCartOpen}
           onClose={() => setIsCartOpen(false)}
-          cart={cartData}
+          cart={cartData || {}}
         />
 
         <ScrollRestoration />
@@ -126,11 +126,11 @@ export function ErrorBoundary() {
         <Links />
       </head>
       <body>
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-gray-900 font-sans p-4">
-          <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8 text-center border border-red-100">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Oops!</h1>
+        <div className="page-container-gray">
+          <div className="form-card max-w-md text-center">
+            <h1 className="text-3xl font-bold text-prolock-black mb-2">Oops!</h1>
             <p className="text-lg text-gray-600 mb-6">{errorMessage}</p>
-            <a href="/" className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700 w-full transition-colors">
+            <a href="/" className="btn-form-submit inline-block text-center">
               Return to Home
             </a>
           </div>

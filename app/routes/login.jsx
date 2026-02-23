@@ -105,15 +105,15 @@ export default function Login() {
   const registered = searchParams.get('registered') === 'true';
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center py-12 px-4">
-      <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 shadow-2xl rounded-[2rem] overflow-hidden bg-white">
+    <div className="page-container-gray py-12">
+      <div className="login-container">
         {/* Sign In Section */}
         <div className="p-10 md:p-16 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-gray-100">
           <div className="mb-10">
-            <h2 className="text-red-600 font-black uppercase tracking-[0.3em] text-xs mb-3 italic">
+            <h2 className="text-prolock-red font-black uppercase tracking-[0.3em] text-xs mb-3 italic">
               Welcome Back
             </h2>
-            <h1 className="text-5xl font-black text-[#111] italic skew-x-[-10deg] leading-none mb-2">
+            <h1 className="italic-heading text-5xl text-prolock-black-alt">
               SIGN IN
             </h1>
             <p className="text-gray-500 font-medium tracking-tight">Access your Prolock account</p>
@@ -124,31 +124,33 @@ export default function Login() {
             {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Email</label>
+              <label htmlFor="login-email" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Email</label>
               <input
+                id="login-email"
                 name="email"
                 type="email"
                 required
                 placeholder="email@example.com"
-                className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all font-medium"
+                className="form-input rounded-xl"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Password</label>
+              <label htmlFor="login-password" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Password</label>
               <input
+                id="login-password"
                 name="password"
                 type="password"
                 required
                 placeholder="••••••••"
-                className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all font-medium"
+                className="form-input rounded-xl"
               />
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#111] text-white py-5 rounded-xl font-black uppercase tracking-widest hover:bg-red-600 transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-black/10 mt-4 disabled:opacity-50"
+              className="btn-form-submit py-5 rounded-xl shadow-black/10 mt-4"
             >
               {isSubmitting ? 'Authenticating...' : 'Sign In'}
             </button>
@@ -156,7 +158,7 @@ export default function Login() {
 
           {error && (
             <div className="mt-8 bg-red-50 border border-red-100 p-4 rounded-xl flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></div>
+              <div className="w-2 h-2 rounded-full bg-prolock-red animate-pulse"></div>
               <p className="text-red-700 font-bold text-sm">{error}</p>
             </div>
           )}
@@ -170,19 +172,19 @@ export default function Login() {
         </div>
 
         {/* Create Account Section */}
-        <div className="bg-[#111] p-10 md:p-16 flex flex-col justify-center text-white relative overflow-hidden">
+        <div className="join-prolock-section">
           {/* Subtle geometric background decoration */}
           <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-red-600/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-[-10%] left-[-10%] w-64 h-64 bg-red-600/5 rounded-full blur-3xl"></div>
 
           <div className="mb-10 relative z-10">
-            <h2 className="text-red-500 font-black uppercase tracking-[0.3em] text-xs mb-3 italic">
+            <h2 className="text-prolock-red font-black uppercase tracking-[0.3em] text-xs mb-3 italic">
               New Member
             </h2>
-            <h1 className="text-5xl font-black italic skew-x-[-10deg] leading-none mb-2">
-              JOIN PRO<span className="text-red-600">LOCK</span>
+            <h1 className="italic-heading text-5xl text-white">
+              JOIN PRO<span className="text-prolock-red">LOCK</span>
             </h1>
-            <p className="text-white/50 font-medium tracking-tight">Register for exclusive benefits</p>
+            <p className="text-white/80 font-medium tracking-tight">Register for exclusive benefits</p>
           </div>
 
           <Form method="post" className="space-y-4 relative z-10">
@@ -191,59 +193,63 @@ export default function Login() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">First Name</label>
+                <label htmlFor="signup-firstName" className="text-[10px] font-bold text-white/70 uppercase tracking-widest pl-1">First Name</label>
                 <input
+                  id="signup-firstName"
                   name="firstName"
                   type="text"
                   placeholder="John"
-                  className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all font-medium text-white placeholder:text-white/20"
+                  className="form-input-dark"
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">Last Name</label>
+                <label htmlFor="signup-lastName" className="text-[10px] font-bold text-white/70 uppercase tracking-widest pl-1">Last Name</label>
                 <input
+                  id="signup-lastName"
                   name="lastName"
                   type="text"
                   placeholder="Doe"
-                  className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all font-medium text-white placeholder:text-white/20"
+                  className="form-input-dark"
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">Email</label>
+              <label htmlFor="signup-email" className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">Email</label>
               <input
+                id="signup-email"
                 name="email"
                 type="email"
                 required
                 placeholder="email@example.com"
-                className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all font-medium text-white placeholder:text-white/20"
+                className="form-input-dark"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">Password</label>
+              <label htmlFor="signup-password" className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">Password</label>
               <input
+                id="signup-password"
                 name="password"
                 type="password"
                 required
                 placeholder="••••••••"
-                className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all font-medium text-white placeholder:text-white/20"
+                className="form-input-dark"
               />
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#fcfcfc] text-[#111] py-5 rounded-xl font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-xl shadow-white/5 mt-4 disabled:opacity-50"
+              className="btn-white mt-4"
             >
               {isSubmitting ? 'Registering...' : 'Create Account'}
             </button>
           </Form>
 
-          <p className="mt-8 text-white/30 text-[10px] font-medium text-center relative z-10 leading-relaxed">
+          <p className="mt-8 text-white/50 text-[10px] font-medium text-center relative z-10 leading-relaxed">
             By creating an account, you agree to our <br />
-            <a href="/policies/terms-of-service" className="text-white/60 underline hover:text-red-500 transition-colors">Terms of Service</a> and <a href="/policies/privacy-policy" className="text-white/60 underline hover:text-red-500 transition-colors">Privacy Policy</a>.
+            <a href="/policies/terms-of-service" className="text-white/80 underline hover:text-prolock-red transition-colors">Terms of Service</a> and <a href="/policies/privacy-policy" className="text-white/80 underline hover:text-prolock-red transition-colors">Privacy Policy</a>.
           </p>
         </div>
       </div>

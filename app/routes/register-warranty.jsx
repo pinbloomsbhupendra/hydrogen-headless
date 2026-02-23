@@ -9,16 +9,25 @@ import { CUSTOMER_QUERY } from '../graphql/customer/queries';
 ====================================================== */
 function getAdminCreds(context) {
     const env = context.env || process.env || {};
+
+    // Check multiple possible names for the admin token
     const adminToken =
         env.SHOPIFY_ADMIN_API_TOKEN ||
-        process.env?.SHOPIFY_ADMIN_API_TOKEN ||
-        null;
-    const shopDomain =
-        env.PUBLIC_STORE_DOMAIN ||
-        process.env?.PUBLIC_STORE_DOMAIN ||
+        env.SHOPIFY_ADMIN_TOKEN ||
+        env.PRIVATE_ADMIN_API_TOKEN ||
         null;
 
-    console.log('[getAdminCreds] Token present:', !!adminToken, 'Domain:', shopDomain);
+    // Check multiple possible names for the shop domain
+    const shopDomain =
+        env.PUBLIC_STORE_DOMAIN ||
+        env.SHOP_DOMAIN ||
+        'iqwxvr-b0.myshopify.com'; // Hardcoded fallback for this specific store
+
+    console.log('[getAdminCreds] Discovery:', {
+        hasToken: !!adminToken,
+        shopDomain,
+        availableKeys: Object.keys(env).filter(k => !k.includes('SECRET') && !k.includes('KEY') && !k.includes('TOKEN')) // Log safe keys
+    });
 
     return { adminToken, shopDomain };
 }
@@ -169,35 +178,38 @@ export async function action({ request, context }) {
             // If shopifyCustomerId is null, this might fail or skip metafield part
             const result = await registerWarranty(payload, adminToken, shopDomain);
 
-            /* 2️⃣ SYNC TO HUBSPOT (NON-BLOCKING) */
-            const hubspotKey =
-                context.env?.HUBSPOT_PRIVATE_ACCESS_KEY ||
-                process.env.HUBSPOT_PRIVATE_ACCESS_KEY;
+            /* 2️⃣ SYNC TO HUBSPOT (BACKGROUND - INSTANT SPEED) */
+            const hubspotKey = context.env?.HUBSPOT_PRIVATE_ACCESS_KEY || process.env.HUBSPOT_PRIVATE_ACCESS_KEY;
 
             if (hubspotKey) {
-                console.log('[action] Attempting HubSpot Sync...', { hasKey: true });
-                try {
-                    const cleanKey = hubspotKey.replace(/^Bearer\s+/i, '');
-                    const hubspotData = {
-                        email: email,
-                        firstName: formData.get('firstName'),
-                        lastName: formData.get('lastName'),
-                        phone: formData.get('phone'),
-                        address: formData.get('address'),
-                        city: formData.get('city'),
-                        state: formData.get('state'),
-                        zip: formData.get('zip'),
-                        country: formData.get('country'),
-                        purchaseDate: formData.get('purchaseDate'),
-                        serial: serial,
-                        product_name: formData.get('productTitle'),
-                        warranty_number: result?.warranty?.warrantyNumber, // generated in actions.js
-                        order_number: orderNumber
-                    };
-                    await submitToHubSpot(hubspotData, cleanKey);
-                } catch (hsError) {
-                    console.error('[action] HubSpot Sync Failed:', hsError);
-                    return { error: `HubSpot Sync Failed: ${hsError.message}` };
+                const cleanKey = hubspotKey.replace(/^Bearer\s+/i, '');
+                const hubspotData = {
+                    email: email,
+                    firstName: formData.get('firstName'),
+                    lastName: formData.get('lastName'),
+                    phone: formData.get('phone'),
+                    address: formData.get('address'),
+                    city: formData.get('city'),
+                    state: formData.get('state'),
+                    zip: formData.get('zip'),
+                    country: formData.get('country'),
+                    purchaseDate: formData.get('purchaseDate'),
+                    serial: serial,
+                    product_name: formData.get('productTitle'),
+                    warranty_number: result?.warranty?.warrantyNumber,
+                    order_number: orderNumber
+                };
+
+                // 1. FAST CHECK (Awaited to catch duplicates)
+                const saveToHubSpot = await submitToHubSpot(hubspotData, cleanKey);
+
+                // 2. BACKGROUND SAVE (Not awaited, instant redirect)
+                if (typeof saveToHubSpot === 'function') {
+                    if (context.waitUntil) {
+                        context.waitUntil(saveToHubSpot().catch(e => console.error('[Background HS Sync Error]', e)));
+                    } else {
+                        saveToHubSpot().catch(e => console.error('[Background HS Sync Error]', e));
+                    }
                 }
             }
 
@@ -222,7 +234,7 @@ export default function WarrantyPage() {
     const actionData = useActionData();
 
     return (
-        <div className="min-h-screen bg-[#b3b3b3] flex flex-col relative pb-0">
+        <div className="page-container-gray pb-0 relative">
             <div className="flex flex-col items-center px-4 pt-12 md:pt-20 w-full flex-grow">
 
                 <WarrantyForm
@@ -241,7 +253,7 @@ export default function WarrantyPage() {
                 </div>
             </div>
 
-            <div className="w-full bg-[#e31722] text-white py-12 mt-24">
+            <div className="warranty-banner">
                 <div className="w-[80%] mx-auto text-center">
                     <p className="text-lg md:text-xl leading-relaxed max-w-5xl mx-auto font-medium opacity-95">
                         If your vehicle is stolen within one year while ProLock is correctly fitted,
@@ -252,7 +264,7 @@ export default function WarrantyPage() {
                         Keep your purchase receipt safely for one year and contact us in the event of a claim.
                     </p>
 
-                    <div className="w-full border-t-2 border-dashed border-white/600 my-10"></div>
+                    <div className="w-full border-t-2 border-dashed border-white/40 my-10"></div>
                 </div>
             </div>
         </div>
