@@ -16,13 +16,26 @@ import Navbar from '~/components/Navbar';
 import Footer from '~/components/Footer';
 import CookieConsent from '~/components/CookieConsent';
 import CartDrawer from '~/components/Cart/CartDrawer';
+import { CART_QUERY } from '~/graphql/cart/queries';
 
 export async function loader({ request, context }) {
-  const { cart, session } = context;
+  const { storefront, session } = context;
   const cartId = session.get('cartId');
   console.log('[Root Loader] Session Cart ID:', cartId);
 
-  const cartData = await cart.get();
+  let cartData = null;
+  if (cartId) {
+    try {
+      const result = await storefront.query(CART_QUERY, {
+        variables: { cartId },
+        cache: storefront.CacheNone(),
+      });
+      cartData = result.cart;
+    } catch (e) {
+      console.error('[Root Loader] Error fetching cart:', e);
+    }
+  }
+
   console.log('[Root Loader] Cart Data:', cartData ? `ID: ${cartData.id}, Qty: ${cartData.totalQuantity}` : 'None or Failed');
 
   return {

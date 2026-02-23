@@ -19,31 +19,52 @@ export async function loader({ context }) {
     return { product };
 }
 
+import { CART_CREATE, CART_LINES_ADD } from '~/graphql/cart/mutations';
+
 export async function action({ request, context }) {
-    const { cart, session } = context;
+    const { storefront, session } = context;
     const formData = await request.formData();
     const variantId = formData.get('variantId');
     const quantity = parseInt(formData.get('quantity'), 10) || 1;
 
-    console.log('[Guardian Action] Adding to cart:', { variantId, quantity });
+    console.log('[Guardian Action RAW API] Adding to cart:', { variantId, quantity });
 
     try {
-        const result = await cart.addLines([{ merchandiseId: variantId, quantity }]);
-        console.log('[Guardian Action] Cart result updated. Total quantity:', result?.cart?.totalQuantity);
+        let cartId = await session.get('cartId');
+        let updatedCart = null;
 
-        // Manually ensure session is updated if a new cart was created
-        if (result?.cart?.id) {
-            session.set('cartId', result.cart.id);
+        if (!cartId) {
+            const { cartCreate } = await storefront.mutate(CART_CREATE, {
+                variables: { input: { lines: [{ merchandiseId: variantId, quantity }] } }
+            });
+            updatedCart = cartCreate?.cart;
+            cartId = updatedCart?.id;
+        } else {
+            const { cartLinesAdd } = await storefront.mutate(CART_LINES_ADD, {
+                variables: { cartId, lines: [{ merchandiseId: variantId, quantity }] }
+            });
+            updatedCart = cartLinesAdd?.cart;
+
+            if (!updatedCart && cartLinesAdd?.userErrors?.length === 0) {
+                const { cartCreate } = await storefront.mutate(CART_CREATE, {
+                    variables: { input: { lines: [{ merchandiseId: variantId, quantity }] } }
+                });
+                updatedCart = cartCreate?.cart;
+                cartId = updatedCart?.id;
+            }
         }
 
-        const headers = new Headers();
-        headers.append('Set-Cookie', await session.commit());
+        if (!updatedCart) throw new Error("Failed to modify cart via API");
 
-        return data({ success: true, cart: result?.cart }, {
-            headers
+        console.log('[Guardian RAW API] Cart result updated. Total quantity:', updatedCart.totalQuantity);
+
+        session.set('cartId', cartId);
+
+        return data({ success: true, cart: updatedCart }, {
+            headers: { 'Set-Cookie': await session.commit() }
         });
     } catch (error) {
-        console.error('[Guardian Action] Error adding to cart:', error);
+        console.error('[Guardian RAW API] Error adding to cart:', error);
         return data({ success: false, error: error.message }, { status: 500 });
     }
 }
