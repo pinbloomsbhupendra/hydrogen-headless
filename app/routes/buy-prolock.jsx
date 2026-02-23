@@ -19,31 +19,63 @@ export async function loader({ context }) {
   return { product };
 }
 
+import { CART_CREATE, CART_LINES_ADD } from '~/graphql/cart/mutations';
+
 export async function action({ request, context }) {
-  const { cart, session } = context;
+  const { storefront, session } = context;
   const formData = await request.formData();
   const variantId = formData.get('variantId');
   const quantity = parseInt(formData.get('quantity'), 10) || 1;
 
-  console.log('[BuyProLock Action] Adding to cart:', { variantId, quantity });
+  console.log('[BuyProLock Action RAW API] Adding to cart:', { variantId, quantity });
 
   try {
-    const result = await cart.addLines([{ merchandiseId: variantId, quantity }]);
-    console.log('[BuyProLock Action] Cart result updated. Total quantity:', result?.cart?.totalQuantity);
+    let cartId = await session.get('cartId');
+    let updatedCart = null;
 
-    // Manually ensure session is updated if a new cart was created
-    if (result?.cart?.id) {
-      session.set('cartId', result.cart.id);
+    if (!cartId) {
+      // 1. Create a NEW cart via raw API if one doesn't exist
+      const { cartCreate } = await storefront.mutate(CART_CREATE, {
+        variables: {
+          input: { lines: [{ merchandiseId: variantId, quantity }] }
+        }
+      });
+      updatedCart = cartCreate?.cart;
+      cartId = updatedCart?.id;
+    } else {
+      // 2. Add to EXISTING cart via raw API
+      const { cartLinesAdd } = await storefront.mutate(CART_LINES_ADD, {
+        variables: {
+          cartId,
+          lines: [{ merchandiseId: variantId, quantity }]
+        }
+      });
+      updatedCart = cartLinesAdd?.cart;
+
+      // If cart expired or failed, create a new one as fallback
+      if (!updatedCart && cartLinesAdd?.userErrors?.length === 0) {
+        const { cartCreate } = await storefront.mutate(CART_CREATE, {
+          variables: { input: { lines: [{ merchandiseId: variantId, quantity }] } }
+        });
+        updatedCart = cartCreate?.cart;
+        cartId = updatedCart?.id;
+      }
     }
 
-    const headers = new Headers();
-    headers.append('Set-Cookie', await session.commit());
+    if (!updatedCart) {
+      throw new Error("Failed to modify cart via API");
+    }
 
-    return data({ success: true, cart: result?.cart }, {
-      headers
+    console.log('[BuyProLock RAW API] Cart result updated. Total quantity:', updatedCart.totalQuantity);
+
+    // Save the cart ID back to the session so it persists across pages
+    session.set('cartId', cartId);
+
+    return data({ success: true, cart: updatedCart }, {
+      headers: { 'Set-Cookie': await session.commit() }
     });
   } catch (error) {
-    console.error('[BuyProLock Action] Error adding to cart:', error);
+    console.error('[BuyProLock RAW API] Error adding to cart:', error);
     return data({ success: false, error: error.message }, { status: 500 });
   }
 }

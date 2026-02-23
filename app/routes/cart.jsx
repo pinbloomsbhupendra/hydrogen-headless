@@ -23,27 +23,43 @@ export async function loader({ context }) {
     });
 }
 
+import { CART_LINES_UPDATE, CART_LINES_REMOVE } from '~/graphql/cart/mutations';
+
 export async function action({ request, context }) {
-    const { cart, session } = context;
+    const { storefront, session } = context;
     const formData = await request.formData();
     const action = formData.get('action');
+    const cartId = await session.get('cartId');
 
-    if (action === 'remove') {
-        const lineId = formData.get('lineId');
-        await cart.removeLines([lineId]);
+    if (!cartId) {
+        return new Response('No cart', { status: 400 });
     }
 
-    if (action === 'update') {
-        const lineId = formData.get('lineId');
-        const quantity = parseInt(formData.get('quantity'), 10);
-        await cart.updateLines([{ id: lineId, quantity }]);
-    }
+    try {
+        if (action === 'remove') {
+            const lineId = formData.get('lineId');
+            await storefront.mutate(CART_LINES_REMOVE, {
+                variables: { cartId, lineIds: [lineId] }
+            });
+        }
 
-    return new Response(null, {
-        headers: {
-            'Set-Cookie': await session.commit(),
-        },
-    });
+        if (action === 'update') {
+            const lineId = formData.get('lineId');
+            const quantity = parseInt(formData.get('quantity'), 10);
+            await storefront.mutate(CART_LINES_UPDATE, {
+                variables: { cartId, lines: [{ id: lineId, quantity }] }
+            });
+        }
+
+        return new Response(null, {
+            headers: {
+                'Set-Cookie': await session.commit(),
+            },
+        });
+    } catch (error) {
+        console.error('[Cart RAW API Update error]:', error);
+        return new Response('Error', { status: 500 });
+    }
 }
 
 export default function Cart() {
@@ -155,7 +171,7 @@ export default function Cart() {
                         </div>
 
                         <a
-                            href={isLoggedIn ? checkoutUrl : (checkoutUrl || '/account/login')}
+                            href={isLoggedIn ? checkoutUrl : (checkoutUrl || '/login')}
                             className="btn-form-submit block text-center"
                         >
                             Checkout

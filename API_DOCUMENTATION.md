@@ -1,207 +1,38 @@
-# API Documentation
-
-This document outlines the various APIs used in the **Hydrogen Headless** project, including Shopify (Storefront & Admin), HubSpot (CRM & Forms), and internal application routes.
-
- All tokens and domains below are specific to the production/development environment of **Prolock / Hydrogen Headless**.
-
-## 1. HubSpot CRM API (Testing with Postman)
-
-### 1.1 Create/Update Contact
-**Endpoint:** `POST https://api.hubapi.com/crm/v3/objects/contacts`
-
-**Headers:**
-```http
-Content-Type: application/json
-Authorization: Bearer YOUR_HUBSPOT_TOKEN_HERE
-```
-
-**Request Body (JSON):**
-```json
-{
- "properties": {
-   "email": "hmauryooa454@gmail.com",
-   "firstname": "Hemant",
-   "lastname": "Maurya",
-   "phone": "7255990852",
-   "address": "Patna, Bihar",
-   "city": "Patna",
-   "state": "Bihar",
-   "zip": "800001",
-   "country": "India",
-   "serial_number": "PRO12345"
- }
-}
-```
-
-### 1.2 Get Contact Details
-**Endpoint:** `GET https://api.hubapi.com/crm/v3/objects/contacts/{email}?idProperty=email&properties={comma_separated_properties}`
-
-**Example URL:**
-`https://api.hubapi.com/crm/v3/objects/contacts/roeehitraj@gmail.com?idProperty=email&properties=email,firstname,lastname,warranty_number`
-
-**Headers:**
-```http
-Authorization: Bearer YOUR_HUBSPOT_TOKEN_HERE
-```
-
-### 1.3 Create Warranty Object (Custom)
-**Endpoint:** `POST https://api.hubapi.com/crm/v3/objects/p245100011_warranty_registrations`
-
-**Headers:**
-```http
-Authorization: Bearer YOUR_HUBSPOT_TOKEN_HERE
-Content-Type: application/json
-```
-
-**Body:**
-```json
-{
-  "properties": {
-    "warranty_number": 123456,
-    "serial_number": "PRO123",
-    "product_name": "ProLock",
-    "model_type": "Standard",
-    "order_id": "#1001",
-    "phone": "555-0123"
-  }
-}
-```
+# ProLock Hydrogen App API Documentation
+This document outlines all external APIs used in the ProLock Hydrogen Storefront. It is structured so you can easily recreate these requests in Postman or test them directly.
 
 ---
 
-## 2. Shopify Storefront API (Testing with Postman)
+## 1. Shopify Storefront API (GraphQL)
+Used for e-commerce logic: Cart, Checkout, and Customer Accounts.
 
-> **⚠️ CRITICAL POSTMAN SETTING:**
-> Ensure the **Authorization** tab is set to **"No Auth"**.
-> The API token is passed in the **Headers**. If you have an active "Authorization" header (e.g. left over from HubSpot), Shopify will return a `400 Bad Request` error.
+**Base Details:**
+*   **Method:** `POST`
+*   **URL:** `https://iqwxvr-b0.myshopify.com/api/2024-01/graphql.json`
+*   **Headers:**
+    *   `Content-Type: application/json`
+    *   `X-Shopify-Storefront-Access-Token: {{YOUR_PUBLIC_STOREFRONT_TOKEN}}`
 
-## 2. Shopify Storefront API
-
-> **⚠️ CRITICAL POSTMAN SETTING:**
-> Ensure the **Authorization** tab is set to **"No Auth"**. Conflicting headers will cause a `400 Bad Request`.
-
-### 1️⃣ Customer Signup
-**Endpoint**
-`POST https://hydrogen-headless-2.myshopify.com/api/2024-10/graphql.json`
-
-**Headers**
-- `Content-Type`: `application/json`
-- `Shopify-Storefront-Private-Token`: `YOUR_STOREFRONT_PRIVATE_TOKEN_HERE`
-
-**GraphQL Mutation**
-```graphql
-mutation customerCreate($input: CustomerCreateInput!) {
-  customerCreate(input: $input) {
-    customer {
-      id
-      email
-    }
-    customerUserErrors {
-      message
-    }
-  }
-}
-```
-
-**Variables**
-```json
-{
-  "input": {
-    "email": "testuser@example.com",
-    "password": "TestPass123!",
-    "firstName": "John",
-    "lastName": "Doe",
-    "acceptsMarketing": false
-  }
-}
-```
-
-### 2️⃣ Customer Login (Generate Access Token)
-**Endpoint**
-`POST https://hydrogen-headless-2.myshopify.com/api/2024-10/graphql.json`
-
-**Headers**
-- `Content-Type`: `application/json`
-- `Shopify-Storefront-Private-Token`: `YOUR_STOREFRONT_PRIVATE_TOKEN_HERE`
-
-**GraphQL Mutation**
-```graphql
-mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
-  customerAccessTokenCreate(input: $input) {
-    customerAccessToken {
-      accessToken
-      expiresAt
-    }
-    customerUserErrors {
-      field
-      message
-    }
-  }
-}
-```
-
-**Variables**
-```json
-{
-  "input": {
-    "email": "testuser@example.com",
-    "password": "TestPass123!"
-  }
-}
-```
-
-### 3️⃣ Create Cart
-**Endpoint**
-`POST https://hydrogen-headless-2.myshopify.com/api/2024-10/graphql.json`
-
-**Headers**
-- `Content-Type`: `application/json`
-- `Shopify-Storefront-Private-Token`: `YOUR_STOREFRONT_PRIVATE_TOKEN_HERE`
-
-**GraphQL Mutation**
-```graphql
-mutation cartCreate($input: CartInput!) {
-  cartCreate(input: $input) {
-    cart {
-      id
-      checkoutUrl
-      lines(first: 5) {
-        nodes {
-          id
-          quantity
-        }
-      }
-    }
-  }
-}
-```
-
-**Variables**
-```json
-{
-  "input": {
-    "lines": [
-      {
-        "merchandiseId": "gid://shopify/ProductVariant/47372375523586",
-        "quantity": 1
-      }
-    ]
-  }
-}
-```
-
-### 4️⃣ Add to Cart
-**Endpoint**
-`POST https://hydrogen-headless-2.myshopify.com/api/2024-10/graphql.json`
-
-**Headers**
-- `Content-Type`: `application/json`
-- `Shopify-Storefront-Private-Token`: `YOUR_STOREFRONT_PRIVATE_TOKEN_HERE`
-
-**GraphQL Mutation**
+### 1.1 Cart & Checkout
+**Mutation: Add Lines to Cart (`CART_LINES_ADD`)**
+Creates or adds an item to a user's cart and generates the checkout URL.
 ```graphql
 mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
   cartLinesAdd(cartId: $cartId, lines: $lines) {
+    cart {
+      id
+      checkoutUrl
+      totalQuantity
+    }
+  }
+}
+```
+
+**Mutation: Update Cart Line Quantity (`CART_LINES_UPDATE`)**
+Updates the quantity of a specific item already in the cart.
+```graphql
+mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+  cartLinesUpdate(cartId: $cartId, lines: $lines) {
     cart {
       id
       totalQuantity
@@ -210,73 +41,29 @@ mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
 }
 ```
 
-**Variables**
-```json
-{
-  "cartId": "gid://shopify/Cart/hWN8zdQyDibjFiKOw3jP1hZs?key=de686eb944c4dda634b9ad80c23bd422",
-  "lines": [
-    {
-      "merchandiseId": "gid://shopify/ProductVariant/47372375523586",
-      "quantity": 2
-    }
-  ]
-}
-```
-
----
-
-### 5️⃣ Get Product Details
-**Endpoint**
-`POST https://hydrogen-headless-2.myshopify.com/api/2024-10/graphql.json`
-
-**Headers**
-- `Content-Type`: `application/json`
-- `Shopify-Storefront-Private-Token`: `YOUR_STOREFRONT_PRIVATE_TOKEN_HERE`
-
-**GraphQL Query**
+**Mutation: Remove Item from Cart (`CART_LINES_REMOVE`)**
+Deletes an item entirely from the cart.
 ```graphql
-query getProduct($handle: String!) {
-  product(handle: $handle) {
-    id
-    title
-    description
-    priceRange {
-      minVariantPrice {
-        amount
-        currencyCode
-      }
-    }
-    variants(first: 5) {
-      nodes {
-        id
-        title
-      }
+mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+  cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+    cart {
+      id
+      totalQuantity
     }
   }
 }
 ```
 
-**Variables**
-```json
-{
-  "handle": "prolock"
-}
-```
+**Checkout & Payment (Hosted URL)**
+In headless Shopify builds, payments are processed on Shopify's secure hosted checkout servers. You do not hit an API endpoint with credit card details directly.
+*   **Action:** Redirect the user to the `checkoutUrl` returned by the Cart mutations, or fetch it using the query below.
+*   **How to Test:** Copy the `checkoutUrl` value returned and paste it into your browser. This will load the standard Shopify payment portal.
 
----
-
-### 6️⃣ Retrieve Checkout URL
-**Endpoint**
-`POST https://hydrogen-headless-2.myshopify.com/api/2024-10/graphql.json`
-
-**Headers**
-- `Content-Type`: `application/json`
-- `Shopify-Storefront-Private-Token`: `YOUR_STOREFRONT_PRIVATE_TOKEN_HERE`
-
-**GraphQL Query**
+**Query: Get Cart Checkout URL**
+If you already have a Cart ID, you can fetch its details (including the `checkoutUrl`) before sending the user to pay.
 ```graphql
-query getCheckoutUrl($id: ID!) {
-  cart(id: $id) {
+query Cart($cartId: ID!) {
+  cart(id: $cartId) {
     id
     checkoutUrl
     cost {
@@ -288,205 +75,159 @@ query getCheckoutUrl($id: ID!) {
   }
 }
 ```
-
-**Variables**
+*Variables:*
 ```json
 {
-  "id": "gid://shopify/Cart/YOUR_CART_ID_HERE"
+  "cartId": "gid://shopify/Cart/YOUR_CART_ID"
 }
 ```
 
----
+### 1.2 Customer Accounts (Signup & Login)
 
-## 3. Shopify Admin API (Server-Side Only)
-
-### 1️⃣ Verify Order (Serial Number Logic)
-**Endpoint**
-`POST https://hydrogen-headless-2.myshopify.com/admin/api/2024-10/graphql.json`
-
-**Headers**
-- `Content-Type`: `application/json`
-- `X-Shopify-Access-Token`: `YOUR_ADMIN_API_TOKEN_HERE`
-
-**GraphQL Query**
+**Mutation: Create Customer Account (Signup)**
+Registers a new customer in Shopify.
 ```graphql
-query verifyOrder($query: String!) {
-  orders(first: 5, query: $query) {
-    nodes {
+mutation customerCreate($input: CustomerCreateInput!) {
+  customerCreate(input: $input) {
+    customer {
       id
-      name
+      firstName
+      lastName
       email
-      createdAt
-      tags
-      customer {
-        id
-      }
-      lineItems(first: 5) {
-        nodes {
-          title
-          sku
-          image {
-            url
-          }
-        }
-      }
     }
-  }
-}
-```
-
-**Variables**
-```json
-{
-  "query": "email:customer@example.com AND name:#1001"
-}
-```
-
-### 2️⃣ Check Warranty Status (Dashboard)
-**Endpoint**
-`POST https://hydrogen-headless-2.myshopify.com/admin/api/2024-10/graphql.json`
-
-**GraphQL Query**
-```graphql
-query getCustomerWarranty($id: ID!) {
-  customer(id: $id) {
-    metafield(namespace: "custom", key: "warranty_active") {
-      value
-    }
-  }
-}
-```
-
-**Variables**
-```json
-{
-  "id": "gid://shopify/Customer/123456789"
-}
-```
-
-### 3️⃣ Register Warranty (Set Metafield)
-**Endpoint**
-`POST https://hydrogen-headless-2.myshopify.com/admin/api/2024-10/graphql.json`
-
-**GraphQL Mutation**
-```graphql
-mutation setMetafield($metafields: [MetafieldsSetInput!]!) {
-  metafieldsSet(metafields: $metafields) {
-    metafields {
-      key
-      value
-    }
-    userErrors {
+    customerUserErrors {
+      code
       field
       message
     }
   }
 }
 ```
-
-**Variables**
+*Variables:* 
 ```json
 {
-  "metafields": [
-    {
-      "ownerId": "gid://shopify/Customer/REPLACE_WITH_REAL_ID",
-      "namespace": "custom",
-      "key": "warranty_active",
-      "type": "json",
-      "value": "{\"warrantyNumber\":170923,\"serial\":\"PRO123\",\"status\":\"ACTIVE\"}"
-    }
-  ]
+  "input": {
+    "email": "newuser@example.com",
+    "password": "password123",
+    "firstName": "John",
+    "lastName": "Doe"
+  }
 }
 ```
 
-### 4️⃣ Register Warranty (Tag Order)
-**Endpoint**
-`POST https://hydrogen-headless-2.myshopify.com/admin/api/2024-10/graphql.json`
-
-**GraphQL Mutation**
+**Mutation: Create Access Token (Login)**
+Authenticates a user via email/password and returns a token used for authorized requests.
 ```graphql
-mutation tagOrder($id: ID!, $tags: [String!]!) {
-  tagsAdd(id: $id, tags: $tags) {
-    userErrors {
+mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
+  customerAccessTokenCreate(input: $input) {
+    customerAccessToken {
+      accessToken
+    }
+    customerUserErrors {
       message
     }
   }
 }
 ```
-
-**Variables**
+*Variables:*
 ```json
 {
-  "id": "gid://shopify/Order/REPLACE_WITH_REAL_ORDER_ID",
-  "tags": ["Warranty Registered"]
+  "input": {
+    "email": "user@example.com",
+    "password": "password123"
+  }
 }
 ```
 
----
-
-### 4️⃣ Get Customer Details (Full)
-**Endpoint**
-`POST https://hydrogen-headless-2.myshopify.com/admin/api/2024-10/graphql.json`
-
-**GraphQL Query**
+**Query: Get Customer Details**
+Fetches profile info (Name, Email, Phone) using the access token.
 ```graphql
-query getCustomerDetails($id: ID!) {
-  customer(id: $id) {
+query Customer($customerAccessToken: String!) {
+  customer(customerAccessToken: $customerAccessToken) {
     id
     firstName
     lastName
     email
     phone
-    amountSpent {
-      amount
-      currencyCode
-    }
-    createdAt
-    defaultAddress {
-      address1
-      city
-      country
-      zip
-    }
-    orders(first: 5, sortKey: CREATED_AT, reverse: true) {
+  }
+}
+```
+
+### 1.3 Orders (Verification)
+**Query: Verify Order (`CUSTOMER_ORDERS_QUERY`)**
+Used to prove the user bought the item before registering a warranty.
+```graphql
+query CustomerOrders($customerAccessToken: String!) {
+  customer(customerAccessToken: $customerAccessToken) {
+    orders(first: 50) {
       nodes {
-        id
-        name
-        totalPriceSet {
-          shopMoney {
-            amount
+        originalTotalPrice {
+          amount
+        }
+        lineItems(first: 10) {
+          nodes {
+            title
           }
         }
-        displayFinancialStatus
-        displayFulfillmentStatus
       }
-    }
-    metafield(namespace: "custom", key: "warranty_active") {
-      value
     }
   }
 }
 ```
 
-**Variables**
+---
+
+## 2. HubSpot API (REST)
+Used exclusively as the CRM and Warranty Database backend.
+
+**Base Details:**
+*   **Headers:**
+    *   `Content-Type: application/json`
+    *   `Authorization: Bearer {{HUBSPOT_PRIVATE_ACCESS_KEY}}`
+
+### 2.1 Warranty Form Submission (V2)
+Pushes the collected Warranty details directly into the specific HubSpot Form.
+
+*   **Method:** `POST`
+*   **URL:** `https://api.hubapi.com/forms/v2/submissions/json-v2/245100011/160edfd8-7905-4eaf-807d-fc794121ff46`
+*   **Body (JSON):**
 ```json
 {
-  "id": "gid://shopify/Customer/9023984959746"
+  "fields": [
+    { "name": "email", "value": "test@example.com" },
+    { "name": "firstname", "value": "John" },
+    { "name": "serial_number", "value": "PROLOCK123" }
+  ]
 }
 ```
 
----
+### 2.2 Contact Management (V3)
+**Lookup Contact by Email**
+*   **Method:** `GET`
+*   **URL:** `https://api.hubapi.com/crm/v3/objects/contacts/test@example.com?idProperty=email`
 
-## 4. Internal Routes (Remix Actions)
+**Create Contact**
+*   **Method:** `POST`
+*   **URL:** `https://api.hubapi.com/crm/v3/objects/contacts`
+*   **Body (JSON):**
+```json
+{
+  "properties": {
+    "email": "newuser@example.com",
+    "firstname": "John",
+    "lastname": "Doe"
+  }
+}
+```
 
-These are the endpoints used by the frontend forms. They accept `multipart/form-data` or `application/x-www-form-urlencoded`.
+### 2.3 Object Association (Linking Warranty to User)
+Links a created Warranty Record to the Customer.
 
-**Local Domain:** `http://localhost:3000`
-**Production Domain:** `https://hydrogen-headless-2.myshopify.com` (Check your actual deployment URL if different)
+*   **Method:** `PUT`
+*   **URL:** `https://api.hubapi.com/crm/v3/objects/contacts/{CONTACT_ID}/associations/deals/{DEAL_ID}/{ASSOCIATION_TYPE_ID}`
 
-| Route | URL | Method | Payload Keys |
-| :--- | :--- | :--- | :--- |
-| **Login** | `/account/login` | `POST` | `intent="login"`, `email`, `password` |
-| **Signup** | `/account/login` | `POST` | `intent="signup"`, `email`, `password`, `firstName`, `lastName` |
-| **Add to Cart** | `/buy-prolock` | `POST` | `variantId`, `quantity` |
-| **Warranty Reg.**| `/register-warranty`| `POST` | `orderNumber`, `email`, `phone`, `firstName`, `lastName`, `serialNumber`... |
+### 2.4 User Dashboard (Warranty History)
+Fetches all historical warranty form submissions from HubSpot for a specific user.
+
+*   **Method:** `GET`
+*   **URL:** `https://api.hubapi.com/form-integrations/v1/submissions/forms/160edfd8-7905-4eaf-807d-fc794121ff46`
