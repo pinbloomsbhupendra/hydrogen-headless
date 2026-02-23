@@ -648,8 +648,28 @@ svg.loading-spinner {
     border-radius: 4px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: var(--prolock-black);
+}
+
+.btn-signout-link {
+    color: var(--prolock-black-alt) !important;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: color 0.2s ease;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    display: inline-block;
+}
+
+.btn-signout-link:hover {
+    color: var(--prolock-red) !important;
 }
 
 /* ============================================
@@ -659,7 +679,7 @@ svg.loading-spinner {
 /* FAQ styles are handled by Tailwind utility classes. */
 
 /* ============================================
-   Base Styles
+   Global Styles
    ============================================ */
 
 body {

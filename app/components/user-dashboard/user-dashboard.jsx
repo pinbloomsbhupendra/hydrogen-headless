@@ -19,7 +19,7 @@ export const UserDashboard = ({ customer, warranty, warranties }) => {
                         Register a Product
                     </a>
                     <Form action="/logout" method="POST">
-                        <button type="submit" className="text-sm text-prolock-black-alt hover:text-prolock-red transition-colors font-black uppercase tracking-widest">
+                        <button type="submit" className="btn-signout-link text-sm">
                             Sign Out
                         </button>
                     </Form>
@@ -43,7 +43,7 @@ export const UserDashboard = ({ customer, warranty, warranties }) => {
                         <Form action="/logout" method="POST">
                             <button
                                 type="submit"
-                                className="text-sm text-prolock-black-alt hover:text-prolock-red transition-colors font-black uppercase tracking-widest"
+                                className="btn-signout-link text-sm"
                             >
                                 Sign Out →
                             </button>
