@@ -234,7 +234,7 @@ export default function WarrantyPage() {
     const actionData = useActionData();
 
     return (
-        <div className="min-h-screen bg-[#b3b3b3] flex flex-col relative pb-0">
+        <div className="page-container-gray pb-0 relative">
             <div className="flex flex-col items-center px-4 pt-12 md:pt-20 w-full flex-grow">
 
                 <WarrantyForm
@@ -253,7 +253,7 @@ export default function WarrantyPage() {
                 </div>
             </div>
 
-            <div className="w-full bg-[#e31722] text-white py-12 mt-24">
+            <div className="warranty-banner">
                 <div className="w-[80%] mx-auto text-center">
                     <p className="text-lg md:text-xl leading-relaxed max-w-5xl mx-auto font-medium opacity-95">
                         If your vehicle is stolen within one year while ProLock is correctly fitted,
@@ -264,7 +264,7 @@ export default function WarrantyPage() {
                         Keep your purchase receipt safely for one year and contact us in the event of a claim.
                     </p>
 
-                    <div className="w-full border-t-2 border-dashed border-white/600 my-10"></div>
+                    <div className="w-full border-t-2 border-dashed border-white/40 my-10"></div>
                 </div>
             </div>
         </div>

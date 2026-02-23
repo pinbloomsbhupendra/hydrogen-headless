@@ -6,8 +6,8 @@ export const UserDashboard = ({ customer, warranty, warranties }) => {
 
     if (list.length === 0) {
         return (
-            <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-                <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md w-full">
+            <div className="page-container-gray p-4">
+                <div className="form-card max-w-md text-center">
                     <h1 className="text-2xl font-black uppercase mb-2">Welcome, {customer?.firstName || 'Customer'}!</h1>
                     <p className="text-gray-500 text-sm mb-6">{customer?.email}</p>
                     <div className="w-full h-px bg-gray-100 mb-6" />
@@ -15,11 +15,11 @@ export const UserDashboard = ({ customer, warranty, warranties }) => {
                     <p className="text-gray-600 mb-6">
                         We couldn't find a warranty linked to your account. Register your ProLock to activate your coverage.
                     </p>
-                    <a href="/register-warranty?new=true" className="inline-block bg-red-600 text-white px-6 py-3 rounded font-bold uppercase hover:bg-black transition-colors w-full mb-4">
+                    <a href="/register-warranty?new=true" className="btn-form-submit mb-4 block">
                         Register a Product
                     </a>
                     <Form action="/logout" method="POST">
-                        <button type="submit" className="text-sm text-gray-400 hover:text-red-600 transition-colors font-bold uppercase tracking-widest">
+                        <button type="submit" className="text-sm text-black-400 hover:text-prolock-red transition-colors font-bold uppercase tracking-widest">
                             Sign Out
                         </button>
                     </Form>
@@ -29,21 +29,21 @@ export const UserDashboard = ({ customer, warranty, warranties }) => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 md:px-8">
-            <div className="max-w-6xl mx-auto">
+        <div className="page-container-gray py-12 px-4 md:px-8 justify-start">
+            <div className="max-w-6xl mx-auto w-full">
                 {/* Header */}
-                <div className="flex justify-between items-end mb-8 border-b-4 border-red-600 pb-4">
+                <div className="dashboard-header">
                     <div>
-                        <h1 className="text-3xl font-black uppercase italic text-[#1a1a1a]">
+                        <h1 className="italic-heading text-3xl text-prolock-black-alt">
                             My Dashboard
                         </h1>
-                        <p className="text-sm font-bold text-gray-500 uppercase mt-1">Welcome back, <span className="text-red-600">{customer.firstName} {customer.lastName}</span></p>
+                        <p className="text-sm font-bold text-gray-500 uppercase mt-1">Welcome back, <span className="text-prolock-red">{customer.firstName} {customer.lastName}</span></p>
                     </div>
                     <div className="text-right">
                         <Form action="/logout" method="POST">
                             <button
                                 type="submit"
-                                className="text-sm text-gray-400 hover:text-red-600 transition-colors font-bold uppercase tracking-widest"
+                                className="text-sm text-black-400 hover:text-prolock-red transition-colors font-bold uppercase tracking-widest"
                             >
                                 Sign Out →
                             </button>
@@ -55,7 +55,7 @@ export const UserDashboard = ({ customer, warranty, warranties }) => {
                 <div className="flex flex-wrap items-center gap-3 mb-8">
                     <a
                         href="/register-warranty?new=true"
-                        className="inline-flex items-center gap-2 bg-red-600 text-white px-5 py-2 rounded font-bold uppercase text-sm hover:bg-black transition-colors tracking-wide"
+                        className="inline-flex items-center gap-2 bg-prolock-red text-white px-5 py-2 rounded font-bold uppercase text-sm hover:bg-black transition-colors tracking-wide"
                     >
                         <span>＋</span> Register Another Product
                     </a>
@@ -76,7 +76,7 @@ export const UserDashboard = ({ customer, warranty, warranties }) => {
                                 <div className="absolute inset-0 bg-red-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
 
                                 {/* Status Badge */}
-                                <div className="absolute top-6 left-6 bg-green-500 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-lg z-10">
+                                <div className="absolute top-6 left-6 badge-active z-10">
                                     Active Warranty
                                 </div>
 
@@ -96,26 +96,26 @@ export const UserDashboard = ({ customer, warranty, warranties }) => {
                             {/* RIGHT SIDE - DETAILS */}
                             <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
                                 <div className="mb-8">
-                                    <h2 className="text-sm font-black text-red-600 uppercase tracking-widest mb-2">Product Details</h2>
-                                    <h3 className="text-4xl font-black italic text-[#1a1a1a] leading-none mb-1">{item.productName || 'Unknown Product'}</h3>
+                                    <h2 className="text-sm font-black text-prolock-red uppercase tracking-widest mb-2">Product Details</h2>
+                                    <h3 className="text-4xl font-black italic text-prolock-black leading-none mb-1">{item.productName || 'Unknown Product'}</h3>
                                     {item.modelType && <p className="text-gray-500 font-bold uppercase text-sm mb-6">{item.modelType} Edition</p>}
 
                                     <div className="grid grid-cols-2 gap-x-4 gap-y-6 text-sm">
                                         <div>
-                                            <p className="text-gray-400 font-bold uppercase text-xs mb-1">Serial Number</p>
-                                            <p className="font-mono font-bold text-lg text-gray-800">{item.serial}</p>
+                                            <p className="detail-label">Serial Number</p>
+                                            <p className="detail-value text-lg">{item.serial}</p>
                                         </div>
                                         <div>
-                                            <p className="text-gray-400 font-bold uppercase text-xs mb-1">Warranty Number</p>
-                                            <p className="font-mono font-bold text-lg text-gray-800">{item.warrantyNumber || 'PENDING'}</p>
+                                            <p className="detail-label">Warranty Number</p>
+                                            <p className="detail-value text-lg">{item.warrantyNumber || 'PENDING'}</p>
                                         </div>
                                         <div>
-                                            <p className="text-gray-400 font-bold uppercase text-xs mb-1">Order ID</p>
-                                            <p className="font-mono font-medium text-gray-700">{item.orderId || 'N/A'}</p>
+                                            <p className="detail-label">Order ID</p>
+                                            <p className="detail-value">{item.orderId || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <p className="text-gray-400 font-bold uppercase text-xs mb-1">Purchase Date</p>
-                                            <p className="font-medium text-gray-700">
+                                            <p className="detail-label">Purchase Date</p>
+                                            <p className="detail-value font-sans">
                                                 {item.purchaseDate ? new Date(item.purchaseDate).toLocaleDateString() : 'N/A'}
                                             </p>
                                         </div>

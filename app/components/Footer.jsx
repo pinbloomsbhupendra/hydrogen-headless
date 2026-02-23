@@ -4,13 +4,13 @@ export const Footer = () => {
     return (
         <footer className="w-full">
             {/* Top Red Section */}
-            <div className="bg-[#ed1c24]">
+            <div className="bg-prolock-red">
                 {/* max-w-5xl keeps the content centered and compact on desktop as requested */}
                 <div className="max-w-5xl mx-auto px-4 md:px-8 py-12 flex flex-col md:flex-row justify-between items-start">
 
                     {/* Logo Section - Matching the image's heavy, italic, black style */}
                     <div className="mb-10 md:mb-0">
-                        <Link to="/" className="text-[44px] md:text-[56px] font-[900] tracking-[-0.07em] italic text-black leading-none select-none flex items-start">
+                        <Link to="/" className="text-[44px] md:text-[56px] logo-text text-black select-none flex items-start">
                             PROLOCK<span className="text-[10px] md:text-[12px] not-italic ml-0.5 font-black mt-1">TM</span>
                         </Link>
                     </div>
@@ -45,7 +45,7 @@ export const Footer = () => {
             </div>
 
             {/* Bottom Black Attribution Bar */}
-            <div className="bg-[#1a1a1a] text-white py-5 border-t border-white/5">
+            <div className="bg-prolock-black-alt text-white py-5 border-t border-white/5">
                 <div className="max-w-5xl mx-auto px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     {/* Left: Copyright */}
                     <div className="text-[11px] font-bold uppercase tracking-wider opacity-50 order-2 md:order-1">
@@ -63,7 +63,7 @@ export const Footer = () => {
                             <div className="w-20 h-5 flex items-center justify-center">
                                 <svg viewBox="0 0 100 30" className="w-full h-full" aria-label="Sperling Logo">
                                     <ellipse cx="50" cy="15" rx="48" ry="13" fill="none" stroke="white" strokeWidth="0.8" />
-                                    <text x="50" y="21" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold" fontFamily="serif" style={{ fontStyle: 'italic' }}>
+                                    <text x="50" y="21" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold" fontFamily="serif" className="sperling-italic">
                                         S<tspan fontSize="10" fontStyle="normal" fontWeight="bold" fontFamily="sans-serif">PERLING</tspan>
                                     </text>
                                 </svg>

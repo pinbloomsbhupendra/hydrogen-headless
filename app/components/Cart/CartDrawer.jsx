@@ -19,10 +19,10 @@ export default function CartDrawer({ isOpen, onClose, cart }) {
       ></div>
 
       {/* Drawer Content */}
-      <div className={`relative w-full max-w-md bg-[#fcfcfc] h-full shadow-2xl flex flex-col transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`cart-drawer transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 bg-[#111] text-white">
+        <div className="cart-drawer-header">
           <h2 className="text-xl font-black italic uppercase tracking-tight flex items-center gap-2">
             Your Cart
             <span className="text-xs font-normal text-gray-400 not-italic">
@@ -46,7 +46,7 @@ export default function CartDrawer({ isOpen, onClose, cart }) {
               <p className="text-lg text-gray-500 font-medium">Your cart is empty</p>
               <button
                 onClick={onClose}
-                className="bg-red-600 text-white font-bold py-3 px-8 rounded hover:bg-red-700 transition-colors uppercase italic"
+                className="btn-form-submit py-3 px-8 italic md:w-auto"
               >
                 Start Shopping
               </button>
@@ -61,7 +61,7 @@ export default function CartDrawer({ isOpen, onClose, cart }) {
                   <input type="hidden" name="lineId" value={line.id} />
                   <button
                     type="submit"
-                    className="text-gray-300 hover:text-red-500 transition-colors bg-transparent p-1"
+                    className="text-gray-300 hover:text-prolock-red transition-colors bg-transparent p-1"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -83,7 +83,7 @@ export default function CartDrawer({ isOpen, onClose, cart }) {
                     {line.merchandise.title !== 'Default Title' && (
                       <p className="text-xs text-gray-500 mt-0.5">{line.merchandise.title}</p>
                     )}
-                    <div className="text-red-600 font-bold text-sm mt-1">
+                    <div className="text-prolock-red font-bold text-sm mt-1">
                       ${parseFloat(line.merchandise.price.amount).toFixed(2)}
                     </div>
                   </div>
@@ -131,10 +131,10 @@ export default function CartDrawer({ isOpen, onClose, cart }) {
 
         {/* Footer */}
         {lines.length > 0 && (
-          <div className="p-6 bg-white border-t border-gray-100 shadow-[0_-5px_20px_rgba(0,0,0,0.02)]">
+          <div className="cart-drawer-footer">
             <div className="flex justify-between items-end mb-1">
               <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Estimated Total</span>
-              <span className="text-3xl font-black text-[#111] italic tracking-tighter loading-none">
+              <span className="text-3xl font-black text-prolock-black italic tracking-tighter loading-none">
                 ${parseFloat(cart.cost.totalAmount.amount).toFixed(2)}
               </span>
             </div>
@@ -142,7 +142,7 @@ export default function CartDrawer({ isOpen, onClose, cart }) {
 
             <a
               href={cart.checkoutUrl}
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-black italic py-4 rounded transition-all uppercase tracking-widest text-lg shadow-lg shadow-red-600/20 text-center flex items-center justify-center gap-2 mb-4"
+              className="btn-checkout mb-4"
             >
               Checkout Now
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -153,7 +153,7 @@ export default function CartDrawer({ isOpen, onClose, cart }) {
             <Link
               to="/cart"
               onClick={onClose}
-              className="block w-full text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest hover:text-[#111] transition-colors"
+              className="block w-full text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest hover:text-prolock-black transition-colors"
             >
               View full bag
             </Link>
