@@ -26,6 +26,7 @@ export default function Hero() {
                 {/* REGISTER WARRANTY - Top center on mobile, right on desktop */}
                 <Link
                     to="/register-warranty"
+                    prefetch="intent"
                     className="bg-red-600 text-white font-bold italic px-10 py-3 rounded border-4 border-white shadow-lg hover:bg-red-700 transition-colors text-lg w-[90%] max-w-sm md:max-w-none md:w-auto text-center mb-0 md:mb-0 md:order-2"
                 >
                     REGISTER WARRANTY
@@ -36,6 +37,7 @@ export default function Hero() {
                     Matching styling for visual consistency */}
                 <Link
                     to="/comparison-table"
+                    prefetch="intent"
                     className="bg-red-600 text-white font-bold italic px-10 py-3 rounded border-4 border-white shadow-lg hover:bg-red-700 transition-colors text-lg w-[90%] max-w-sm md:max-w-none md:w-auto text-center mt-auto mb-20 md:mt-0 md:mb-0 md:order-1"
                 >
                     BUY PROLOCK

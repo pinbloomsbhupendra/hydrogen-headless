@@ -114,7 +114,7 @@ export async function loader({ context }) {
         return redirect('/login');
     }
 
-    // Use defer to return the customer immediately, while warranties load in background
+    // Returning the warranties promise directly enables streaming in React Router 7
     return {
         customer,
         warranties: getWarranties(customer.email, context)

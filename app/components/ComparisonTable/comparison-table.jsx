@@ -6,12 +6,21 @@ const ComparisonTable = ({ prolock, guardian }) => {
     const guardianData = guardian;
 
     if (!prolockData || !guardianData) {
-        return (
-            <div className="text-center p-20">
-                <h2 className="text-2xl font-bold text-red-600 mb-4">Product Data Unavailable</h2>
-                <p className="text-gray-600">Could not fetch product details from Shopify.</p>
-            </div>
-        );
+        // Fallback mock data for demonstration if products are missing in Shopify
+        const mockProlock = prolockData || {
+            title: "Prolock Original",
+            descriptionHtml: "<ul><li>Standard Size for Easy Storage</li><li>Fits in Vehicle Glove Box</li><li>Up to $2000 Guaranteed Rebate</li></ul>",
+            priceRange: { minVariantPrice: { amount: "199.0", currencyCode: "USD" } },
+            images: { nodes: [{ url: "/prolock.png" }] }
+        };
+        const mockGuardian = guardianData || {
+            title: "Prolock Guardian",
+            descriptionHtml: "<ul><li>Larger Size for Enhanced Deterrence</li><li>Stored on Floor or Boot</li><li>Up to $1500 Guaranteed Rebate</li></ul>",
+            priceRange: { minVariantPrice: { amount: "249.0", currencyCode: "USD" } },
+            images: { nodes: [{ url: "/prolock guardian.png" }] }
+        };
+
+        return <ComparisonTable prolock={mockProlock} guardian={mockGuardian} />;
     }
 
     const renderPrice = (product) => {
@@ -66,7 +75,7 @@ const ComparisonTable = ({ prolock, guardian }) => {
             <div className="flex flex-col md:flex-row shadow-lg rounded-lg overflow-hidden relative bg-white">
 
                 {/* VS Badge */}
-                <div className="absolute left-1/2 top-[12rem] -translate-x-1/2 -translate-y-1/2 z-20 hidden md:flex items-center justify-center w-16 h-16 bg-red-600 rounded-full border-4 border-white shadow-md">
+                <div className="absolute left-1/2 top-[50%] md:top-[12rem] -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-16 h-16 bg-red-600 rounded-full border-4 border-white shadow-md">
                     <span className="text-white font-extrabold italic text-2xl">VS</span>
                 </div>
 
@@ -111,10 +120,11 @@ const ComparisonTable = ({ prolock, guardian }) => {
                     ], true)}
 
                     <div className="mt-auto pt-12 w-full flex justify-center">
-                        <Link to="/buy-prolock-guardian">
-                            <button className="bg-red-600 text-white font-bold italic px-12 py-3 text-xl rounded shadow hover:bg-red-700 transition-colors uppercase border-2 border-white whitespace-nowrap">
-                                GUARDIAN
-                            </button>
+                        <Link
+                            to="/buy-prolock-guardian"
+                            className="bg-red-600 text-white font-bold italic px-12 py-3 text-xl rounded shadow hover:bg-red-700 transition-colors uppercase border-2 border-white whitespace-nowrap"
+                        >
+                            GUARDIAN
                         </Link>
                     </div>
                 </div>

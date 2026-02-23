@@ -8,8 +8,9 @@ import {
   useRouteError,
   useLoaderData,
   data,
+  Await,
 } from 'react-router';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import globalStyles from './styles/global.css?url';
 import Navbar from '~/components/Navbar';
 import Footer from '~/components/Footer';
@@ -21,11 +22,9 @@ export async function loader({ request, context }) {
   const cartId = session.get('cartId');
   console.log('[Root Loader] Session Cart ID:', cartId);
 
-  const cartData = await cart.get();
-  console.log('[Root Loader] Cart Data:', cartData ? `ID: ${cartData.id}, Qty: ${cartData.totalQuantity}` : 'None or Failed');
-
+  // In React Router 7, returning a promise directly enables deferred streaming
   return {
-    cartData: cartData,
+    cartData: cart.get(),
   };
 }
 
@@ -36,13 +35,11 @@ export function links() {
   ];
 }
 
-export default function App() {
-  const { cartData } = useLoaderData();
+function CartStateContainer({ resolvedCartData }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const cartCount = resolvedCartData?.totalQuantity || 0;
+  const cartId = resolvedCartData?.id;
 
-  // Auto-open cart when an item is added
-  const cartCount = cartData?.totalQuantity || 0;
-  const cartId = cartData?.id;
   const prevCartId = useRef(cartId);
   const prevCartCount = useRef(cartCount);
 
@@ -50,8 +47,6 @@ export default function App() {
     // If cart ID changed (new cart created) or count increased, open the drawer
     const isNewCart = cartId && prevCartId.current && cartId !== prevCartId.current;
     const isCountIncreased = cartCount > prevCartCount.current;
-
-    // Also trigger if it's the very first time an item is added to a brand new cart
     const isFirstItem = cartCount > 0 && !prevCartId.current && cartId;
 
     if (isNewCart || isCountIncreased || isFirstItem) {
@@ -63,28 +58,42 @@ export default function App() {
   }, [cartId, cartCount]);
 
   return (
-    <html lang="en">
+    <>
+      <Navbar
+        cartCount={cartCount}
+        onCartClick={() => setIsCartOpen(true)}
+      />
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cart={resolvedCartData}
+      />
+    </>
+  );
+}
+
+export default function App() {
+  const { cartData } = useLoaderData();
+
+  return (
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
-        <Navbar
-          cartCount={cartCount}
-          onCartClick={() => setIsCartOpen(true)}
-        />
+      <body suppressHydrationWarning>
+        <Suspense fallback={<Navbar cartCount={0} onCartClick={() => { }} />}>
+          <Await resolve={cartData}>
+            {(resolvedCartData) => <CartStateContainer resolvedCartData={resolvedCartData} />}
+          </Await>
+        </Suspense>
         <main>
           <Outlet />
         </main>
         <Footer />
         <CookieConsent />
-        <CartDrawer
-          isOpen={isCartOpen}
-          onClose={() => setIsCartOpen(false)}
-          cart={cartData}
-        />
 
         <ScrollRestoration />
         <Scripts />
@@ -92,6 +101,7 @@ export default function App() {
     </html>
   );
 }
+
 
 export function shouldRevalidate({ formMethod, defaultShouldRevalidate, currentUrl, nextUrl }) {
   // Always revalidate after a mutation (POST, PUT, DELETE)
@@ -118,14 +128,14 @@ export function ErrorBoundary() {
   }
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-gray-900 font-sans p-4">
           <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8 text-center border border-red-100">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Oops!</h1>

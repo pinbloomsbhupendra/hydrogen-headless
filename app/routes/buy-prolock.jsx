@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useLoaderData, useFetcher, data } from 'react-router';
+import { useState, Suspense } from 'react';
+import { useLoaderData, useFetcher, data, Await } from 'react-router';
 
 import { PRODUCT_DETAILS_QUERY } from '~/graphql/product/queries';
 
@@ -7,16 +7,17 @@ const PRODUCT_HANDLE = 'prolock';
 
 export async function loader({ context }) {
   const { storefront } = context;
-  const { product } = await storefront.query(PRODUCT_DETAILS_QUERY, {
+  const productPromise = storefront.query(PRODUCT_DETAILS_QUERY, {
     variables: { handle: PRODUCT_HANDLE },
-    cache: storefront.CacheNone(),
+    cache: storefront.CacheLong(),
+  }).then(({ product }) => {
+    if (!product) {
+      throw new Response('Product not found', { status: 404 });
+    }
+    return product;
   });
 
-  if (!product) {
-    throw new Response('Product not found', { status: 404 });
-  }
-
-  return { product };
+  return { product: productPromise };
 }
 
 export async function action({ request, context }) {
@@ -48,8 +49,7 @@ export async function action({ request, context }) {
   }
 }
 
-export default function BuyProLock() {
-  const { product } = useLoaderData();
+function ProductLayout({ product }) {
   const [quantity, setQuantity] = useState(1);
   const fetcher = useFetcher();
 
@@ -140,6 +140,18 @@ export default function BuyProLock() {
   );
 }
 
+export default function BuyProLock() {
+  const { product } = useLoaderData();
+
+  return (
+    <Suspense fallback={<div className="w-full text-center py-20 italic text-gray-400">Loading product details...</div>}>
+      <Await resolve={product}>
+        {(resolvedProduct) => <ProductLayout product={resolvedProduct} />}
+      </Await>
+    </Suspense>
+  );
+}
+
 export function ErrorBoundary({ error }) {
   return (
     <div className="p-10 text-center">
@@ -150,3 +162,4 @@ export function ErrorBoundary({ error }) {
     </div>
   );
 }
+

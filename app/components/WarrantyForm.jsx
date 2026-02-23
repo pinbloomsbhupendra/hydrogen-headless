@@ -34,12 +34,12 @@ export default function WarrantyForm({ actionData, productData, customerId, init
                         Go to Dashboard
                     </Link>
 
-                    <button
-                        onClick={() => window.location.href = '/register-warranty?new=true'}
-                        className="w-full bg-red-600 text-white font-bold py-4 rounded hover:bg-black transition-colors uppercase tracking-widest text-sm"
+                    <Link
+                        to="/register-warranty?new=true"
+                        className="w-full bg-red-600 text-white font-bold py-4 rounded hover:bg-black transition-colors uppercase tracking-widest text-sm flex items-center justify-center"
                     >
                         Register New Warranty
-                    </button>
+                    </Link>
                 </div>
             </div>
         );

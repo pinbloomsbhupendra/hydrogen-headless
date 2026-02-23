@@ -26,7 +26,6 @@ function getAdminCreds(context) {
     console.log('[getAdminCreds] Discovery:', {
         hasToken: !!adminToken,
         shopDomain,
-        availableKeys: Object.keys(env).filter(k => !k.includes('SECRET') && !k.includes('KEY') && !k.includes('TOKEN')) // Log safe keys
     });
 
     return { adminToken, shopDomain };
@@ -48,6 +47,10 @@ export async function loader({ request, context }) {
     const { adminToken, shopDomain } = getAdminCreds(context);
 
     const isNewRegistration = url.searchParams.get('new') === 'true';
+
+    if (!adminToken) {
+        console.error('[loader] CRITICAL: SHOPIFY_ADMIN_API_TOKEN is missing from environment.');
+    }
 
     /* ── Customer lookup ─────────────────────────────────── */
     if (customerAccessToken) {
@@ -213,7 +216,7 @@ export async function action({ request, context }) {
                 }
             }
 
-            return redirect('/thank-you');
+            return { success: true, registered: true, warranty: result.warranty };
 
         } catch (error) {
             console.error('[action] Registration failed:', error);

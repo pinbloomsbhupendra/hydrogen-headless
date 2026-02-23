@@ -40,7 +40,7 @@ export default function Header({ cartCount, onCartClick }) {
         {/* Right: Account & Cart Icons */}
         <ul className="flex justify-end items-center gap-6">
           <li>
-            <Link to="/dashboard" className="text-white hover:text-gray-300 transition-colors">
+            <Link to="/dashboard" prefetch="intent" className="text-white hover:text-gray-300 transition-colors">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"

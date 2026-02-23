@@ -10,7 +10,7 @@ export const Footer = () => {
 
                     {/* Logo Section - Matching the image's heavy, italic, black style */}
                     <div className="mb-10 md:mb-0">
-                        <Link to="/" className="text-[44px] md:text-[56px] font-[900] tracking-[-0.07em] italic text-black leading-none select-none flex items-start">
+                        <Link to="/" prefetch="intent" className="text-[44px] md:text-[56px] font-[900] tracking-[-0.07em] italic text-black leading-none select-none flex items-start">
                             PROLOCK<span className="text-[10px] md:text-[12px] not-italic ml-0.5 font-black mt-1">TM</span>
                         </Link>
                     </div>
@@ -20,25 +20,25 @@ export const Footer = () => {
                         {/* Column 1: Prolock */}
                         <div className="flex flex-col space-y-1.5">
                             <h3 className="text-[17px] font-extrabold mb-1">Prolock</h3>
-                            <Link to="/buy-prolock" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Prolock Original</Link>
-                            <Link to="/buy-prolock-guardian" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Prolock Guardian</Link>
-                            <Link to="/login" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Account Login</Link>
+                            <Link to="/buy-prolock" prefetch="intent" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Prolock Original</Link>
+                            <Link to="/buy-prolock-guardian" prefetch="intent" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Prolock Guardian</Link>
+                            <Link to="/login" prefetch="intent" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Account Login</Link>
                         </div>
 
                         {/* Column 2: Information */}
                         <div className="flex flex-col space-y-1.5">
                             <h3 className="text-[17px] font-extrabold mb-1">Information</h3>
-                            <a href="#" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Cookie Policy</a>
-                            <a href="#" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Privacy Policy</a>
-                            <a href="#" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Shipping & Returns</a>
+                            <Link to="/pages/cookie-policy" prefetch="intent" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Cookie Policy</Link>
+                            <Link to="/pages/privacy-policy" prefetch="intent" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Privacy Policy</Link>
+                            <Link to="/pages/shipping-returns" prefetch="intent" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Shipping & Returns</Link>
                         </div>
 
                         {/* Column 3: About */}
                         <div className="flex flex-col space-y-1.5">
                             <h3 className="text-[17px] font-extrabold mb-1">About</h3>
-                            <a href="#" className="hover:text-black transition-colors duration-200 text-sm font-semibold">About Us</a>
-                            <a href="#" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Contact Us</a>
-                            <a href="#" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Terms & Conditions</a>
+                            <Link to="/pages/about-us" prefetch="intent" className="hover:text-black transition-colors duration-200 text-sm font-semibold">About Us</Link>
+                            <Link to="/pages/contact-us" prefetch="intent" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Contact Us</Link>
+                            <Link to="/pages/terms-conditions" prefetch="intent" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Terms & Conditions</Link>
                         </div>
                     </div>
                 </div>

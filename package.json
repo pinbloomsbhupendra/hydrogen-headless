@@ -6,7 +6,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "shopify hydrogen build --codegen",
-    "dev": "shopify hydrogen dev --codegen --port 3000",
+    "dev": "NODE_OPTIONS='--dns-result-order=ipv4first' shopify hydrogen dev --codegen --port 3000",
     "preview": "shopify hydrogen preview --build",
     "start": "shopify hydrogen start",
     "lint": "eslint --no-error-on-unmatched-pattern .",
