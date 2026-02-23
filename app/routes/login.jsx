@@ -124,8 +124,9 @@ export default function Login() {
             {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Email</label>
+              <label htmlFor="login-email" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Email</label>
               <input
+                id="login-email"
                 name="email"
                 type="email"
                 required
@@ -135,8 +136,9 @@ export default function Login() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Password</label>
+              <label htmlFor="login-password" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Password</label>
               <input
+                id="login-password"
                 name="password"
                 type="password"
                 required
@@ -191,8 +193,9 @@ export default function Login() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-white/70 uppercase tracking-widest pl-1">First Name</label>
+                <label htmlFor="signup-firstName" className="text-[10px] font-bold text-white/70 uppercase tracking-widest pl-1">First Name</label>
                 <input
+                  id="signup-firstName"
                   name="firstName"
                   type="text"
                   placeholder="John"
@@ -200,8 +203,9 @@ export default function Login() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-white/70 uppercase tracking-widest pl-1">Last Name</label>
+                <label htmlFor="signup-lastName" className="text-[10px] font-bold text-white/70 uppercase tracking-widest pl-1">Last Name</label>
                 <input
+                  id="signup-lastName"
                   name="lastName"
                   type="text"
                   placeholder="Doe"
@@ -211,8 +215,9 @@ export default function Login() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">Email</label>
+              <label htmlFor="signup-email" className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">Email</label>
               <input
+                id="signup-email"
                 name="email"
                 type="email"
                 required
@@ -222,8 +227,9 @@ export default function Login() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">Password</label>
+              <label htmlFor="signup-password" className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">Password</label>
               <input
+                id="signup-password"
                 name="password"
                 type="password"
                 required

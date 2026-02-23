@@ -7,10 +7,27 @@ export default {
     async fetch(request, env, executionContext) {
         try {
             const url = new URL(request.url);
-            const mode = env.NODE_ENV || 'development';
-            const isProduction = mode === 'production';
+            const isProduction = env?.NODE_ENV === 'production';
+            const sessionSecret = env?.SESSION_SECRET || env?.env?.SESSION_SECRET;
 
-            if (!env?.SESSION_SECRET && isProduction) {
+            if (url.pathname === '/private_access_tokens') {
+                return new Response(JSON.stringify({}), {
+                    status: 200,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    }
+                });
+            }
+
+            if (url.pathname === '/favicon.ico') {
+                return new Response(null, {
+                    status: 200,
+                    headers: { 'Access-Control-Allow-Origin': '*' }
+                });
+            }
+
+            if (!sessionSecret && isProduction) {
                 throw new Error('SESSION_SECRET environment variable is not set');
             }
 
@@ -25,11 +42,19 @@ export default {
             }
             */
 
+            // Sanitize env to prevent Hydrogen from auto-registering OIDC routes
+            const {
+                PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID,
+                PUBLIC_CUSTOMER_ACCOUNT_API_URL,
+                ...filteredEnv
+            } = env || {};
+
+            const mode = env?.NODE_ENV || 'development';
             const handleRequest = createRequestHandler({
                 build: remixBuild,
                 mode,
                 getLoadContext: () =>
-                    createAppLoadContext(currentRequest, env, executionContext),
+                    createAppLoadContext(currentRequest, filteredEnv, executionContext),
             });
 
             const response = await handleRequest(currentRequest);

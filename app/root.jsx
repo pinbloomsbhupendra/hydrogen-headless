@@ -10,7 +10,8 @@ import {
   data,
 } from 'react-router';
 import { useState, useEffect, useRef } from 'react';
-import customStyles from './styles/custom.css?url';
+import './styles/tailwind.css';
+import './styles/custom.css';
 import Navbar from '~/components/Navbar';
 import Footer from '~/components/Footer';
 import CookieConsent from '~/components/CookieConsent';
@@ -31,7 +32,6 @@ export async function loader({ request, context }) {
 
 export function links() {
   return [
-    { rel: 'stylesheet', href: customStyles },
     { rel: 'icon', type: 'image/png', href: '/logo.png' },
   ];
 }
@@ -83,7 +83,7 @@ export default function App() {
         <CartDrawer
           isOpen={isCartOpen}
           onClose={() => setIsCartOpen(false)}
-          cart={cartData}
+          cart={cartData || {}}
         />
 
         <ScrollRestoration />
