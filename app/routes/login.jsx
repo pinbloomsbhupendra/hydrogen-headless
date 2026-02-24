@@ -105,7 +105,7 @@ export default function Login() {
   const registered = searchParams.get('registered') === 'true';
 
   return (
-    <div className="page-container-gray py-12">
+    <div className="min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-112px)] bg-[#b3b3b3] flex flex-col items-center justify-center py-8 px-4">
       <div className="login-container">
         {/* Sign In Section */}
         <div className="p-10 md:p-16 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-gray-100">

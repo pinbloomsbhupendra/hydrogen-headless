@@ -85,7 +85,7 @@ async function getWarranties(email, context) {
                 productName: props.product_name || 'ProLock',
                 modelType: props.model_type,
                 serial: props.serial_number || 'N/A',
-                warranty_number: props.warranty_number,
+                warrantyNumber: props.warranty_number,
                 orderId: props.order_id,
                 purchaseDate: purchaseDate,
                 expirationDate: expirationDate,
@@ -140,17 +140,17 @@ export default function Dashboard() {
 
 function DashboardSkeleton({ customer }) {
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 md:px-8">
+        <div className="min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-112px)] bg-gray-50 py-8 md:py-12 px-4 md:px-8">
             <div className="max-w-6xl mx-auto">
-                <div className="flex justify-between items-end mb-8 border-b-4 border-gray-200 pb-4 animate-pulse">
+                <div className="flex flex-wrap justify-between items-end mb-8 border-b-4 border-gray-200 pb-4 animate-pulse gap-4">
                     <div>
-                        <h1 className="text-3xl font-black uppercase italic text-gray-200">My Dashboard</h1>
+                        <h1 className="text-2xl md:text-3xl font-black uppercase italic text-gray-200">My Dashboard</h1>
                         <p className="text-sm font-bold text-gray-300 uppercase mt-1">
                             Welcome back, {customer?.firstName || 'Customer'}
                         </p>
                     </div>
                 </div>
-                <div className="p-12 bg-white rounded-2xl shadow-sm text-center">
+                <div className="p-8 md:p-12 bg-white rounded-2xl shadow-sm text-center">
                     <div className="inline-block w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-4"></div>
                     <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">Loading Your Warranties...</p>
                 </div>

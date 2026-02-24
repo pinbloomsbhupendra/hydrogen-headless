@@ -88,22 +88,22 @@ export default function BuyProLockGuardian() {
     const isAdding = fetcher.state !== 'idle';
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-4 md:p-12 flex flex-col md:flex-row gap-12 bg-white mt-10 mb-10">
+        <div className="w-full max-w-7xl mx-auto px-4 py-8 md:py-12 md:px-8 flex flex-col md:flex-row gap-8 md:gap-12 bg-white">
             {/* Left Column: Image */}
             <div className="w-full md:w-1/2 flex items-center justify-center bg-prolock-gray-bg rounded-sm p-4">
                 <img
                     src="/img2.png"
                     alt="Prolock Guardian"
-                    className="w-full object-contain"
+                    className="w-full max-h-[400px] object-contain"
                 />
             </div>
 
             {/* Right Column: Details & Actions */}
-            <div className="w-full md:w-1/2 flex flex-col pt-4">
+            <div className="w-full md:w-1/2 flex flex-col pt-2 md:pt-4">
                 <h1 className="product-title italic-heavy">
                     PROLOCK GUARDIAN
                 </h1>
-                <div className="w-full h-[1px] bg-gray-300 mb-8"></div>
+                <div className="w-full h-[1px] bg-gray-300 mb-6 md:mb-8"></div>
 
                 <ul className="w-full list-none p-0 m-0 flex flex-col gap-4 mb-0">
                     <li className="flex items-center pb-2 border-b border-gray-100">
@@ -122,7 +122,7 @@ export default function BuyProLockGuardian() {
                     </li>
                 </ul>
 
-                <div className="flex flex-col gap-8 mt-6">
+                <div className="flex flex-col gap-6 md:gap-8 mt-6">
                     <div className="flex items-center gap-4">
                         <span className="text-prolock-navy font-bold text-lg">Quantity:</span>
                         <div className="flex items-center border border-gray-200 rounded">
