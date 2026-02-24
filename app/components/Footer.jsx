@@ -5,18 +5,17 @@ export const Footer = () => {
         <footer className="w-full">
             {/* Top Red Section */}
             <div className="bg-prolock-red">
-                {/* max-w-5xl keeps the content centered and compact on desktop as requested */}
-                <div className="max-w-5xl mx-auto px-4 md:px-8 py-12 flex flex-col md:flex-row justify-between items-start">
+                <div className="max-w-5xl mx-auto px-5 md:px-8 py-10 md:py-12 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-4">
 
-                    {/* Logo Section - Matching the image's heavy, italic, black style */}
-                    <div className="mb-10 md:mb-0">
-                        <Link to="/" className="text-[44px] md:text-[56px] logo-text text-black select-none flex items-start">
-                            PROLOCK<span className="text-[10px] md:text-[12px] not-italic ml-0.5 font-black mt-1">TM</span>
+                    {/* Logo Section */}
+                    <div className="flex-shrink-0">
+                        <Link to="/" className="text-[36px] md:text-[52px] logo-text text-black select-none flex items-start">
+                            PROLOCK<span className="text-[9px] md:text-[11px] not-italic ml-0.5 font-black mt-1">TM</span>
                         </Link>
                     </div>
 
-                    {/* Links Grid - Using standard bold weights for an "original" site feel */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-x-12 gap-y-10 text-white">
+                    {/* Links Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-8 gap-y-6 text-white w-full md:w-auto">
                         {/* Column 1: Prolock */}
                         <div className="flex flex-col space-y-1.5">
                             <h3 className="text-[17px] font-extrabold mb-1">Prolock</h3>
