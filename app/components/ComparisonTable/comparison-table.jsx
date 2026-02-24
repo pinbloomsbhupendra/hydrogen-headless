@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { Money } from '@shopify/hydrogen';
+import { Money, Image } from '@shopify/hydrogen';
 
 const ComparisonTable = ({ prolock, guardian }) => {
     const prolockData = prolock;
@@ -43,7 +43,15 @@ const ComparisonTable = ({ prolock, guardian }) => {
                     {/* Top Section */}
                     <div className="h-[200px] md:h-[320px] w-full flex flex-col items-center justify-end pb-4 md:pb-10">
                         <div className="h-[100px] sm:h-[140px] md:h-[200px] w-full flex items-center justify-center mb-4 md:mb-8 px-4 md:px-8">
-                            <img src={prolockData.images.nodes[0]?.url || "/prolock.png"} alt={prolockData.title} className="max-h-full w-auto object-contain mix-blend-darken" />
+                            {prolockData.images.nodes[0] ? (
+                                <Image
+                                    data={prolockData.images.nodes[0]}
+                                    className="max-h-full w-auto object-contain mix-blend-darken"
+                                    sizes="(min-width: 768px) 400px, 200px"
+                                />
+                            ) : (
+                                <img src="/Product/img1.png" alt={prolockData.title} className="max-h-full w-auto object-contain mix-blend-darken" />
+                            )}
                         </div>
                         <h2 className="text-lg md:text-3xl lg:text-4xl font-bold uppercase tracking-widest text-[#0f172a] text-center flex items-center justify-center h-12 md:h-20 leading-none">
                             PROLOCK
@@ -68,7 +76,7 @@ const ComparisonTable = ({ prolock, guardian }) => {
 
                     {/* Button */}
                     <div className="mt-8 md:mt-12 mb-8 md:mb-16 w-full flex justify-center">
-                        <Link to="/prolock">
+                        <Link to="/prolock" prefetch="intent">
                             <button className="bg-[#e60000] text-white font-bold px-8 md:px-14 py-2 md:py-4 text-sm md:text-2xl hover:bg-red-700 transition-colors uppercase tracking-wider">
                                 PROLOCK
                             </button>
@@ -81,7 +89,15 @@ const ComparisonTable = ({ prolock, guardian }) => {
                     {/* Top Section */}
                     <div className="h-[200px] md:h-[320px] w-full flex flex-col items-center justify-end pb-4 md:pb-10">
                         <div className="h-[100px] sm:h-[140px] md:h-[200px] w-full flex items-center justify-center mb-4 md:mb-8 px-4 md:px-8">
-                            <img src={guardianData.images.nodes[0]?.url || "/prolock guardian.png"} alt={guardianData.title} className="max-h-full w-auto object-contain mix-blend-darken" />
+                            {guardianData.images.nodes[0] ? (
+                                <Image
+                                    data={guardianData.images.nodes[0]}
+                                    className="max-h-full w-auto object-contain mix-blend-darken"
+                                    sizes="(min-width: 768px) 400px, 200px"
+                                />
+                            ) : (
+                                <img src="/Product/img2.png" alt={guardianData.title} className="max-h-full w-auto object-contain mix-blend-darken" />
+                            )}
                         </div>
                         <h2 className="text-lg md:text-3xl lg:text-4xl font-bold uppercase tracking-widest text-[#0f172a] text-center flex flex-col items-center justify-center h-12 md:h-20 leading-tight md:leading-snug">
                             <span>PROLOCK</span>
@@ -107,7 +123,7 @@ const ComparisonTable = ({ prolock, guardian }) => {
 
                     {/* Button */}
                     <div className="mt-8 md:mt-12 mb-8 md:mb-16 w-full flex justify-center">
-                        <Link to="/prolock-guardian">
+                        <Link to="/prolock-guardian" prefetch="intent">
                             <button className="bg-[#e60000] text-white font-bold px-8 md:px-14 py-2 md:py-4 text-sm md:text-2xl hover:bg-red-700 transition-colors uppercase tracking-wider border-2 md:border-[3px] border-white">
                                 GUARDIAN
                             </button>
@@ -124,10 +140,10 @@ const ComparisonTable = ({ prolock, guardian }) => {
             {/* Bottom Packaging Images Section */}
             <div className="flex flex-row justify-center items-center mt-6 md:mt-12 gap-8 md:gap-32 w-full bg-white px-4">
                 <div className="flex justify-center p-2">
-                    <img src="/Product/img1.png" alt="Prolock Packaging" style={{ height: '280px', width: 'auto', maxWidth: '100%' }} className="object-contain drop-shadow-lg transform transition-transform hover:scale-105 rounded-xl border border-gray-100" />
+                    <img src="/Product/img1.png" alt="Prolock Packaging" width="300" height="280" style={{ height: '280px', width: 'auto', maxWidth: '100%' }} className="object-contain drop-shadow-lg transform transition-transform hover:scale-105 rounded-xl border border-gray-100" />
                 </div>
                 <div className="flex justify-center p-2">
-                    <img src="/Product/img2.png" alt="Prolock Guardian Packaging" style={{ height: '280px', width: 'auto', maxWidth: '100%' }} className="object-contain drop-shadow-lg transform transition-transform hover:scale-105 rounded-xl border border-gray-100" />
+                    <img src="/Product/img2.png" alt="Prolock Guardian Packaging" width="300" height="280" style={{ height: '280px', width: 'auto', maxWidth: '100%' }} className="object-contain drop-shadow-lg transform transition-transform hover:scale-105 rounded-xl border border-gray-100" />
                 </div>
             </div>
         </div>

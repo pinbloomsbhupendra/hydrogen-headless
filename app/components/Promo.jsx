@@ -26,6 +26,8 @@ export default function Promo() {
                         <img
                             src="/Product/img1.png"
                             alt="Prolock Original"
+                            width="240"
+                            height="600"
                             className="max-h-[600px] w-auto object-contain"
                         />
                     </div>
@@ -43,6 +45,8 @@ export default function Promo() {
                                 <img
                                     src="/Hero/img3.png"
                                     alt="Prolock in Use"
+                                    width="400"
+                                    height="300"
                                     className="w-full object-cover border border-gray-200"
                                 />
                             </div>
@@ -67,6 +71,8 @@ export default function Promo() {
                                 <img
                                     src="/Product/img1.png"
                                     alt="Prolock Original"
+                                    width="200"
+                                    height="200"
                                     className="h-44 sm:h-56 object-contain"
                                 />
                             </div>
@@ -74,6 +80,8 @@ export default function Promo() {
                                 <img
                                     src="/Product/img2.png"
                                     alt="Prolock Guardian"
+                                    width="200"
+                                    height="200"
                                     className="h-44 sm:h-56 object-contain"
                                 />
                             </div>
@@ -85,6 +93,8 @@ export default function Promo() {
                         <img
                             src="/Product/img2.png"
                             alt="Prolock Guardian"
+                            width="240"
+                            height="600"
                             className="max-h-[600px] w-auto object-contain"
                         />
                     </div>

@@ -8,6 +8,10 @@ export default function Hero() {
                 <img
                     src="/Hero/car.png"
                     alt="Car with Prolock security system"
+                    width="1920"
+                    height="560"
+                    loading="eager"
+                    fetchpriority="high"
                     className="w-full h-full object-cover object-[center_30%]"
                 />
             </div>
@@ -18,6 +22,7 @@ export default function Hero() {
                 {/* REGISTER WARRANTY — top on mobile, right on desktop */}
                 <Link
                     to="/register-warranty"
+                    prefetch="intent"
                     className="hero-cta w-full max-w-[280px] sm:max-w-[320px] md:w-auto md:max-w-none md:order-2 text-sm sm:text-base"
                 >
                     REGISTER WARRANTY
@@ -26,6 +31,7 @@ export default function Hero() {
                 {/* BUY PROLOCK — bottom on mobile, left on desktop */}
                 <Link
                     to="/comparison-table"
+                    prefetch="intent"
                     className="hero-cta w-full max-w-[280px] sm:max-w-[320px] md:w-auto md:max-w-none md:order-1 text-sm sm:text-base"
                 >
                     BUY PROLOCK

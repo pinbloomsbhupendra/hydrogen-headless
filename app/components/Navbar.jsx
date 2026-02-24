@@ -49,16 +49,16 @@ export default function Header({ cartCount, onCartClick }) {
             </button>
           </div>
 
-          <div className="navbar-center">
-            <Link to="/" prefetch="" className="navbar-logo-link">
-              <img src="/Product/prolock-logo.png" alt="Prolock Logo" className="navbar-logo-image" />
+          <div className="navbar-center font-sans">
+            <Link to="/" prefetch="intent" className="navbar-logo-link">
+              <img src="/Product/prolock-logo.png" alt="Prolock Logo" width="180" height="40" className="navbar-logo-image" />
             </Link>
           </div>
 
           {/* Right: Account & Cart Icons */}
           <ul className="navbar-right">
             <li>
-              <Link to="/dashboard" className="navbar-icon-link">
+              <Link to="/dashboard" prefetch="intent" className="navbar-icon-link">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -114,7 +114,7 @@ export default function Header({ cartCount, onCartClick }) {
           />
           <nav className="mobile-menu animate-slide-in-left">
             <div className="mobile-menu-header">
-              <Link to="/" className="mobile-menu-logo logo-text" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/" prefetch="intent" className="mobile-menu-logo logo-text" onClick={() => setMobileMenuOpen(false)}>
                 PROLOCK
               </Link>
               <button
@@ -136,22 +136,22 @@ export default function Header({ cartCount, onCartClick }) {
             </div>
             <ul className="mobile-menu-links">
               <li>
-                <Link to="/" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/" prefetch="intent" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/buy-prolock" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/comparison-table" prefetch="intent" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>
                   Buy Prolock
                 </Link>
               </li>
               <li>
-                <Link to="/warranty-registration" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/register-warranty" prefetch="intent" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>
                   Warranty Registration
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/dashboard" prefetch="intent" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>
                   My Account
                 </Link>
               </li>
