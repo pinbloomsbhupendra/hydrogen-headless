@@ -99,18 +99,18 @@ export default function BuyProLock() {
   const isAdding = fetcher.state !== 'idle';
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-8 md:py-12 md:px-8 flex flex-col md:flex-row gap-8 md:gap-12 bg-white">
+    <div className="w-full max-w-5xl mx-auto px-4 py-8 lg:py-14 lg:px-8 flex flex-col lg:flex-row gap-8 lg:gap-14 bg-white">
       {/* Left Column: Image */}
-      <div className="w-full md:w-1/2 flex items-center justify-center bg-prolock-gray-bg rounded-sm p-4">
+      <div className="w-full lg:w-1/2 flex items-center justify-center bg-prolock-gray-bg rounded-sm p-6 sm:p-8">
         <img
           src="/img1.png"
           alt="Prolock"
-          className="w-full max-h-[400px] object-contain"
+          className="w-full max-w-[340px] lg:max-w-full max-h-[380px] object-contain mx-auto"
         />
       </div>
 
       {/* Right Column: Details & Actions */}
-      <div className="w-full md:w-1/2 flex flex-col pt-2 md:pt-4">
+      <div className="w-full lg:w-1/2 flex flex-col">
         <h1 className="product-title italic-heavy">
           PROLOCK
         </h1>

@@ -711,10 +711,16 @@ svg.loading-spinner {
 
 .promo-section {
     background-color: #DADDDC;
-    padding: 40px 16px;
+    padding: 24px 0;
 }
 
 @media (min-width: 768px) {
+    .promo-section {
+        padding: 48px 0;
+    }
+}
+
+@media (min-width: 1024px) {
     .promo-section {
         padding: 56px 0;
     }
@@ -840,7 +846,7 @@ svg.loading-spinner {
     color: white;
     font-weight: bold;
     font-size: 0.75rem;
-    margin-right: 1rem;
+    margin-right: 0.75rem;
 }
 
 .btn-add-to-cart {
@@ -849,11 +855,23 @@ svg.loading-spinner {
     color: white;
     font-weight: 900;
     font-style: italic;
-    padding: 1rem;
-    font-size: 1.125rem;
+    padding: 0.9rem 1rem;
+    font-size: 1.05rem;
     border-radius: 4px;
     transition: background-color 0.2s;
     text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    min-height: 48px;
+}
+
+.btn-add-to-cart:hover:not(:disabled) {
+    background-color: var(--prolock-red-dark);
+}
+
+.btn-add-to-cart:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* ============================================
@@ -862,11 +880,18 @@ svg.loading-spinner {
 
 .form-card {
     background-color: white;
-    padding: 1.5rem;
+    padding: 1.25rem;
     border-radius: 8px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     border-top: 4px solid var(--prolock-red);
     width: 100%;
+    max-width: 100%;
+}
+
+@media (min-width: 480px) {
+    .form-card {
+        padding: 1.75rem;
+    }
 }
 
 @media (min-width: 640px) {
@@ -995,6 +1020,7 @@ img {
 }
 
 /* Prevent horizontal overflow */
-html, body {
+html,
+body {
     overflow-x: hidden;
 }

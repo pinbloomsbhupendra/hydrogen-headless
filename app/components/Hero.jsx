@@ -2,9 +2,9 @@ import { Link } from 'react-router';
 
 export default function Hero() {
     return (
-        <section className="hero w-full relative">
+        <section className="w-full relative">
             {/* Hero Background Image */}
-            <div className="w-full h-[280px] sm:h-[380px] md:h-[500px] lg:h-[580px] overflow-hidden">
+            <div className="w-full h-[260px] sm:h-[340px] md:h-[460px] lg:h-[560px] overflow-hidden">
                 <img
                     src="/car.png"
                     alt="Car with Prolock security system"
@@ -12,12 +12,13 @@ export default function Hero() {
                 />
             </div>
 
-            {/* CTA Buttons — stacked in the center on mobile, spread apart on desktop */}
-            <div className="absolute inset-0 flex flex-col justify-between items-center pt-3 pb-5 sm:pt-4 sm:pb-6 md:flex-row md:items-start md:justify-between md:pt-5 md:px-[10%]">
+            {/* CTA Buttons overlay */}
+            <div className="absolute inset-0 flex flex-col justify-between items-center px-6 pt-3 pb-4 sm:pt-4 sm:pb-5 md:flex-row md:items-start md:justify-between md:px-[8%] md:pt-6">
+
                 {/* REGISTER WARRANTY — top on mobile, right on desktop */}
                 <Link
                     to="/register-warranty"
-                    className="hero-cta text-sm sm:text-base w-[80%] sm:w-[60%] md:w-auto md:order-2"
+                    className="hero-cta w-full max-w-[280px] sm:max-w-[320px] md:w-auto md:max-w-none md:order-2 text-sm sm:text-base"
                 >
                     REGISTER WARRANTY
                 </Link>
@@ -25,7 +26,7 @@ export default function Hero() {
                 {/* BUY PROLOCK — bottom on mobile, left on desktop */}
                 <Link
                     to="/comparison-table"
-                    className="hero-cta text-sm sm:text-base w-[80%] sm:w-[60%] md:w-auto md:order-1"
+                    className="hero-cta w-full max-w-[280px] sm:max-w-[320px] md:w-auto md:max-w-none md:order-1 text-sm sm:text-base"
                 >
                     BUY PROLOCK
                 </Link>
