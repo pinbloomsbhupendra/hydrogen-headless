@@ -6,8 +6,8 @@ export const UserDashboard = ({ customer, warranty, warranties }) => {
 
     if (list.length === 0) {
         return (
-            <div className="page-container-gray p-4">
-                <div className="form-card max-w-md text-center">
+            <div className="min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-112px)] bg-[#b3b3b3] flex flex-col items-center justify-center p-4">
+                <div className="form-card max-w-md text-center w-full">
                     <h1 className="text-2xl font-black uppercase mb-2">Welcome, {customer?.firstName || 'Customer'}!</h1>
                     <p className="text-gray-500 text-sm mb-6">{customer?.email}</p>
                     <div className="w-full h-px bg-gray-100 mb-6" />
@@ -29,7 +29,7 @@ export const UserDashboard = ({ customer, warranty, warranties }) => {
     }
 
     return (
-        <div className="page-container-gray py-12 px-4 md:px-8 justify-start">
+        <div className="min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-112px)] bg-[#b3b3b3] flex flex-col items-start py-8 md:py-12 px-4 md:px-8">
             <div className="max-w-6xl mx-auto w-full">
                 {/* Header */}
                 <div className="dashboard-header">

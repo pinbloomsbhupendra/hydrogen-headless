@@ -29,10 +29,10 @@ export default function Promo() {
                         </div>
 
                         {/* CENTER CONTENT - GRAY CARD */}
-                        <div className="promo-card promo-card-gray promo-content-card !py-12">
-                            <h1 className="promo-heading !text-black text-4xl lg:text-[3.5rem] mb-6 whitespace-nowrap font-black tracking-tight">
+                        <div className="promo-card promo-card-gray promo-content-card !py-8 lg:!py-12">
+                            <h2 className="promo-heading !text-black mb-6 font-black tracking-tight">
                                 UP TO $2000 GUARANTEED REBATE*
-                            </h1>
+                            </h2>
 
                             <div className="flex flex-col md:flex-row items-stretch gap-10">
                                 {/* DRIVER IMAGE */}

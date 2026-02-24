@@ -10,13 +10,14 @@ import {
   data,
 } from 'react-router';
 import { useState, useEffect, useRef } from 'react';
-import './styles/tailwind.css';
-import './styles/custom.css';
+
 import Navbar from '~/components/Navbar';
 import Footer from '~/components/Footer';
 import CookieConsent from '~/components/CookieConsent';
 import CartDrawer from '~/components/Cart/CartDrawer';
 import { CART_QUERY } from '~/graphql/cart/queries';
+import tailwindStyles from '~/styles/tailwind.css?url';
+import customStyles from '~/styles/custom.css?url';
 
 export async function loader({ request, context }) {
   const { storefront, session } = context;
@@ -45,6 +46,8 @@ export async function loader({ request, context }) {
 
 export function links() {
   return [
+    { rel: 'stylesheet', href: tailwindStyles },
+    { rel: 'stylesheet', href: customStyles },
     { rel: 'icon', type: 'image/png', href: '/logo.png' },
   ];
 }
