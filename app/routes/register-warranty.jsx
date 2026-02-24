@@ -238,13 +238,13 @@ export default function WarrantyPage() {
             <div className="flex flex-col items-center w-full max-w-7xl mx-auto px-4">
                 {/* Header Badge */}
                 <div className="bg-prolock-red border-2 border-white px-6 md:px-8 py-2 md:py-3 mb-4 shadow-sm">
-                    <h1 className="text-white text-xl md:text-3xl font-bold italic tracking-wide text-center uppercase">
+                    <h1 className="text-white text-xl md:text-3xl font-bold tracking-wide text-center uppercase">
                         Register Your Warranty
                     </h1>
                 </div>
 
                 {/* Subtitle */}
-                <p className="text-center text-sm md:text-base font-medium text-[#333333] max-w-3xl mb-8 md:mb-12 italic px-2">
+                <p className="text-center text-sm md:text-base font-medium text-[#333333] max-w-3xl mb-8 md:mb-12 px-2">
                     Please complete this warranty registration for your Prolock and Prolock Guardian Purchase
                     <br className="hidden md:block" />
                     from any retail store in Australia or New Zealand

@@ -1,6 +1,28 @@
 /* custom.css */
 
 /* ============================================
+   Custom Fonts
+   ============================================ */
+
+@font-face {
+
+    font-family: 'InterVariable';
+    src: url('/Fonts/InterVariable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+@font-face {
+    font-family: 'InterVariable';
+    src: url('/Fonts/InterVariable-Italic.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* ============================================
    Global Box Sizing
    ============================================ */
 
@@ -27,8 +49,9 @@
     --prolock-border: #eeeeee;
 
     /* Fonts */
-    --font-impact: 'Impact', 'Haettenschweiler', 'Arial Narrow Bold', sans-serif;
-    --font-standard: Arial, sans-serif;
+    --font-impact: 'InterVariable', sans-serif;
+    --font-standard: var(--font-inter);
+    --font-inter: 'InterVariable', sans-serif;
 }
 
 /* ============================================
@@ -80,7 +103,6 @@
 }
 
 .italic-heavy {
-    font-style: italic;
     font-weight: 900;
     letter-spacing: -0.05em;
 }
@@ -88,12 +110,11 @@
 .logo-text {
     font-weight: 900;
     letter-spacing: -0.07em;
-    font-style: italic;
     line-height: 1;
 }
 
 .sperling-italic {
-    font-style: italic;
+    font-style: normal;
 }
 
 /* ============================================
@@ -133,7 +154,6 @@
     background-color: var(--prolock-red);
     color: white;
     font-weight: 900;
-    font-style: italic;
     padding: 1rem;
     border-radius: 4px;
     transition: all 0.2s;
@@ -188,8 +208,6 @@
     font-size: 1.875rem;
     font-weight: 900;
     color: var(--prolock-heading-color, var(--prolock-black-alt));
-    font-style: italic;
-    transform: skewX(-10deg);
     line-height: 1;
     margin-bottom: 1rem;
     text-transform: uppercase;
@@ -338,7 +356,7 @@
 }
 
 .detail-value {
-    font-family: monospace;
+    font-family: var(--font-inter);
     font-weight: 700;
     font-size: 1.125rem;
     color: #1f2937;
@@ -350,9 +368,14 @@
    Base Styles
    ============================================ */
 
+html,
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'InterVariable', sans-serif;
+}
+
+* {
+    font-family: inherit;
 }
 
 main {
@@ -441,29 +464,33 @@ svg.loading-spinner {
    ============================================ */
 
 .navbar {
-    background-color: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid #18181b;
+    background-color: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(16px);
+    border-bottom: 2px solid var(--prolock-red);
     position: sticky;
     top: 0;
     z-index: 50;
     height: 64px;
+    /* Mobile height */
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
 }
 
 @media (min-width: 768px) {
     .navbar {
-        height: 112px;
+        height: 100px;
+        /* Desktop height */
     }
 }
 
-/* Inner grid: 3-column layout on all sizes */
 .navbar-inner {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
+    width: 100%;
     height: 100%;
     padding: 0 1rem;
-    max-width: 100%;
 }
 
 @media (min-width: 768px) {
@@ -478,43 +505,49 @@ svg.loading-spinner {
     justify-content: flex-start;
 }
 
-.navbar-logo {
+.navbar-center {
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100%;
+    position: relative;
+    z-index: 10;
 }
 
 .navbar-logo-link {
-    color: white;
-    text-decoration: none;
     display: flex;
     align-items: center;
-    font-size: 2.5rem;
-    letter-spacing: -0.07em;
-    font-style: italic;
-    font-weight: 900;
-    line-height: 1;
+    justify-content: center;
+    height: 100%;
 }
 
-@media (min-width: 768px) {
-    .navbar-logo-link {
-        font-size: 3.5rem;
+.navbar-logo-image {
+    height: 48px;
+    /* Refined mobile height */
+    width: auto;
+    object-fit: contain;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    z-index: 100;
+}
+
+/* Hover effect for a premium feel */
+.navbar-logo-image:hover {
+    transform: scale(1.08);
+    /* filter: drop-shadow(0 0 15px rgba(237, 28, 36, 0.6)); */
+}
+
+@media (min-width: 480px) {
+    .navbar-logo-image {
+        height: 56px;
     }
 }
 
-.navbar-logo-tm {
-    font-size: 0.6rem;
-    align-self: flex-start;
-    margin-left: 0.2rem;
-    margin-top: 0.2rem;
-    font-weight: 900;
-    font-style: normal;
-    line-height: 1;
-}
-
 @media (min-width: 768px) {
-    .navbar-logo-tm {
-        font-size: 0.75rem;
+    .navbar-logo-image {
+        height: 72px;
+        /* Balanced desktop presence */
+        /* Center offset removed for better alignment */
     }
 }
 
@@ -522,7 +555,7 @@ svg.loading-spinner {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 1rem;
+    gap: 1.25rem;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -530,7 +563,7 @@ svg.loading-spinner {
 
 @media (min-width: 768px) {
     .navbar-right {
-        gap: 1.5rem;
+        gap: 2rem;
     }
 }
 
@@ -538,7 +571,7 @@ svg.loading-spinner {
     color: white;
     display: flex;
     align-items: center;
-    transition: color 0.2s;
+    transition: all 0.2s ease;
     background: none;
     border: none;
     cursor: pointer;
@@ -546,7 +579,36 @@ svg.loading-spinner {
 }
 
 .navbar-icon-link:hover {
-    color: #d1d5db;
+    color: var(--prolock-red, #ff0000);
+    transform: translateY(-2px);
+}
+
+.mobile-menu-btn {
+    color: white;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+}
+
+.mobile-menu-btn:hover {
+    color: var(--prolock-red, #ff0000);
+}
+
+/* Ensure other elements are responsive too */
+@media (max-width: 767px) {
+    .navbar-right svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .mobile-menu-btn svg {
+        width: 28px;
+        height: 28px;
+    }
 }
 
 /* Mobile menu button - always visible */
@@ -673,10 +735,11 @@ svg.loading-spinner {
    ============================================ */
 
 .hero-cta {
+    font-family: var(--font-inter);
     background-color: var(--prolock-red);
     color: white;
     font-weight: bold;
-    font-style: italic;
+    /* font-style: italic; */
     padding: 12px 40px;
     border-radius: 4px;
     border: 4px solid white;
@@ -826,7 +889,6 @@ svg.loading-spinner {
     letter-spacing: -0.025em;
     margin-bottom: 0.5rem;
     text-transform: uppercase;
-    font-style: italic;
 }
 
 @media (min-width: 768px) {
@@ -855,7 +917,6 @@ svg.loading-spinner {
     background-color: var(--prolock-red);
     color: white;
     font-weight: 900;
-    font-style: italic;
     padding: 0.9rem 1rem;
     font-size: 1.05rem;
     border-radius: 4px;

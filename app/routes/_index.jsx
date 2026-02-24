@@ -1,6 +1,14 @@
 import Hero from '~/components/Hero';
 import Promo from '~/components/Promo';
 
+export async function loader() {
+    return new Response(null, {
+        headers: {
+            'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+        },
+    });
+}
+
 /**
  * Index Route Component
  * 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLoaderData, useFetcher, data } from 'react-router';
+import { Image } from '@shopify/hydrogen';
 
 import { PRODUCT_DETAILS_QUERY } from '~/graphql/product/queries';
 
@@ -9,14 +10,19 @@ export async function loader({ context }) {
     const { storefront } = context;
     const { product } = await storefront.query(PRODUCT_DETAILS_QUERY, {
         variables: { handle: PRODUCT_HANDLE },
-        cache: storefront.CacheNone(),
+        cache: storefront.CacheLong(),
     });
 
     if (!product) {
         throw new Response('Product not found', { status: 404 });
     }
 
-    return { product };
+    return new Response(JSON.stringify({ product }), {
+        headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+        },
+    });
 }
 
 import { CART_CREATE, CART_LINES_ADD } from '~/graphql/cart/mutations';
@@ -91,11 +97,23 @@ export default function BuyProLockGuardian() {
         <div className="w-full max-w-5xl mx-auto px-4 py-8 lg:py-14 lg:px-8 flex flex-col lg:flex-row gap-8 lg:gap-14 bg-white">
             {/* Left Column: Image */}
             <div className="w-full lg:w-1/2 flex items-center justify-center bg-prolock-gray-bg rounded-sm p-6 sm:p-8">
-                <img
-                    src="/img2.png"
-                    alt="Prolock Guardian"
-                    className="w-full max-w-[340px] lg:max-w-full max-h-[380px] object-contain mx-auto"
-                />
+                {product.images.nodes[0] ? (
+                    <Image
+                        data={product.images.nodes[0]}
+                        className="w-full max-w-[340px] lg:max-w-full max-h-[380px] object-contain mx-auto"
+                        sizes="(min-width: 1024px) 500px, 100vw"
+                        loading="eager"
+                        fetchPriority="high"
+                    />
+                ) : (
+                    <img
+                        src="/Product/img2.png"
+                        alt="Prolock Guardian"
+                        width="400"
+                        height="380"
+                        className="w-full max-w-[340px] lg:max-w-full max-h-[380px] object-contain mx-auto"
+                    />
+                )}
             </div>
 
             {/* Right Column: Details & Actions */}

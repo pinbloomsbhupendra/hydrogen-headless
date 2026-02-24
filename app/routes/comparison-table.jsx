@@ -10,22 +10,28 @@ export async function loader({ context }) {
     const [prolockData, guardianData] = await Promise.all([
       storefront.query(PRODUCT_COMPARISON_QUERY, {
         variables: { handle: 'prolock' },
-        cache: storefront.CacheNone(),
+        cache: storefront.CacheLong(),
       }).catch(e => ({ error: e.message || 'Error fetching prolock' })),
       storefront.query(PRODUCT_COMPARISON_QUERY, {
         variables: { handle: 'prolock-guardian' },
-        cache: storefront.CacheNone(),
+        cache: storefront.CacheLong(),
       }).catch(e => ({ error: e.message || 'Error fetching guardian' }))
     ]);
 
-    return {
+    // Return data with browser caching instructions (1 hour)
+    return new Response(JSON.stringify({
       prolock: prolockData?.product || null,
       guardian: guardianData?.product || null,
       errors: {
         prolock: prolockData?.error,
         guardian: guardianData?.error
       }
-    };
+    }), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+      },
+    });
   } catch (error) {
     console.error('Comparison loader error:', error);
     return { prolock: null, guardian: null, errors: { global: error.message } };

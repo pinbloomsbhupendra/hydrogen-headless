@@ -139,8 +139,12 @@ export default function Cart() {
                                         <fetcher.Form method="POST">
                                             <input type="hidden" name="action" value="remove" />
                                             <input type="hidden" name="lineId" value={line.id} />
-                                            <button type="submit" className="text-sm text-gray-400 hover:text-prolock-red underline transition-colors">
-                                                Remove
+                                            <button
+                                                type="submit"
+                                                className="text-sm text-gray-400 hover:text-prolock-red underline transition-colors disabled:opacity-50"
+                                                disabled={fetcher.state !== 'idle'}
+                                            >
+                                                {fetcher.formData?.get('lineId') === line.id && fetcher.formData?.get('action') === 'remove' ? 'Removing...' : 'Remove'}
                                             </button>
                                         </fetcher.Form>
                                     </div>
@@ -173,12 +177,19 @@ export default function Cart() {
                         <a
                             href={isLoggedIn ? checkoutUrl : (checkoutUrl || '/login')}
                             className="btn-form-submit block text-center"
+                            onClick={(e) => {
+                                // Add a loading effect on click
+                                e.currentTarget.innerText = 'Redirecting to Checkout...';
+                                e.currentTarget.style.opacity = '0.7';
+                                e.currentTarget.style.pointerEvents = 'none';
+                            }}
                         >
                             Checkout
                         </a>
 
                         <Link
                             to="/prolock"
+                            prefetch="intent"
                             className="block text-center text-sm text-gray-400 mt-4 hover:text-prolock-black underline decoration-gray-300 underline-offset-4 transition-colors"
                         >
                             Continue Shopping

@@ -49,18 +49,16 @@ export default function Header({ cartCount, onCartClick }) {
             </button>
           </div>
 
-          {/* Center: Logo */}
-          <div className="navbar-logo">
-            <Link to="/" prefetch="intent" className="logo-text navbar-logo-link">
-              PROLOCK
-              <span className="navbar-logo-tm">TM</span>
+          <div className="navbar-center font-sans">
+            <Link to="/" prefetch="intent" className="navbar-logo-link">
+              <img src="/Product/prolock-logo.png" alt="Prolock Logo" width="180" height="40" className="navbar-logo-image" />
             </Link>
           </div>
 
           {/* Right: Account & Cart Icons */}
           <ul className="navbar-right">
             <li>
-              <Link to="/dashboard" className="navbar-icon-link">
+              <Link to="/dashboard" prefetch="intent" className="navbar-icon-link">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -107,29 +105,64 @@ export default function Header({ cartCount, onCartClick }) {
         </div>
       </header>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div className="mobile-menu-overlay" onClick={() => setMobileMenuOpen(false)}>
-          <nav className="mobile-menu" onClick={(e) => e.stopPropagation()}>
+        <>
+          <div
+            className="mobile-menu-overlay animate-fade-in"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <nav className="mobile-menu animate-slide-in-left">
             <div className="mobile-menu-header">
-              <span className="logo-text mobile-menu-logo">PROLOCK</span>
-              <button onClick={() => setMobileMenuOpen(false)} className="mobile-menu-close">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+              <Link to="/" prefetch="intent" className="mobile-menu-logo logo-text" onClick={() => setMobileMenuOpen(false)}>
+                PROLOCK
+              </Link>
+              <button
+                className="mobile-menu-close"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Close menu"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-7 h-7"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
             <ul className="mobile-menu-links">
-              <li><Link to="/" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>Home</Link></li>
-              <li><Link to="/prolock" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>Buy Prolock Original</Link></li>
-              <li><Link to="/prolock-guardian" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>Buy Prolock Guardian</Link></li>
-              <li><Link to="/comparison-table" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>Compare</Link></li>
-              <li><Link to="/register-warranty" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>Register Warranty</Link></li>
-              <li><Link to="/dashboard" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>My Account</Link></li>
+              <li>
+                <Link to="/" prefetch="intent" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/comparison-table" prefetch="intent" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>
+                  Buy Prolock
+                </Link>
+              </li>
+              <li>
+                <Link to="/register-warranty" prefetch="intent" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>
+                  Warranty Registration
+                </Link>
+              </li>
+              <li>
+                <Link to="/dashboard" prefetch="intent" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>
+                  My Account
+                </Link>
+              </li>
             </ul>
           </nav>
-        </div>
+        </>
       )}
+
+
+
+
     </>
   );
 }
