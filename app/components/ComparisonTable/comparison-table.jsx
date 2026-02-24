@@ -14,119 +14,120 @@ const ComparisonTable = ({ prolock, guardian }) => {
         );
     }
 
-    const renderPrice = (product) => {
+    // Helper to get raw price string or Money component
+    const PriceDisplay = ({ product }) => {
         const price = product?.priceRange?.minVariantPrice;
         if (!price) return null;
-        return (
-            <div className="text-3xl font-black mb-8">
-                <Money data={price} />
-            </div>
-        );
+        return <Money data={price} />;
     };
 
-    const renderFeatures = (product, defaultFeatures, isDark = false) => {
-        const html = product?.descriptionHtml;
-        const textColor = isDark ? 'text-black' : 'text-gray-800';
-        const borderColor = isDark ? 'border-gray-500' : 'border-gray-200';
+    const featuresProlock = [
+        <PriceDisplay product={prolockData} />,
+        "Fits in Vehicle Glove Box",
+        "Up to $2000 Guaranteed Rebate"
+    ];
 
-        // Check if we have a valid list in HTML
-        if (html && html.includes('<li>')) {
-            const items = html.match(/<li>(.*?)<\/li>/g).map(item => item.replace(/<\/?li>/g, ''));
-            return (
-                <ul className="w-full list-none p-0 m-0 flex flex-col gap-6">
-                    {items.map((item, idx) => (
-                        <li key={idx} className={`flex items-center pb-4 border-b ${borderColor}`}>
-                            <div className="shrink-0 w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white font-bold text-sm mr-4">
-                                {idx + 1}
-                            </div>
-                            <span className={`text-lg font-medium ${textColor}`} dangerouslySetInnerHTML={{ __html: item }} />
-                        </li>
-                    ))}
-                </ul>
-            );
-        }
-
-        // Fallback to hardcoded list if description is empty or not a list
-        return (
-            <ul className="w-full list-none p-0 m-0 flex flex-col gap-6">
-                {defaultFeatures.map((feature, idx) => (
-                    <li key={idx} className={`flex items-center pb-4 border-b ${idx === 2 ? 'border-transparent' : borderColor}`}>
-                        <div className="shrink-0 w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white font-bold text-sm mr-4">
-                            {idx + 1}
-                        </div>
-                        <span className={`text-lg font-medium ${textColor}`}>{feature}</span>
-                    </li>
-                ))}
-            </ul>
-        );
-    };
+    const featuresGuardian = [
+        <PriceDisplay product={guardianData} />,
+        "Larger Size Stored on Floor or Boot",
+        "Up to $1500 Guaranteed Rebate"
+    ];
 
     return (
-        <div className="w-full max-w-7xl mx-auto my-10 font-sans">
-            <div className="flex flex-col md:flex-row shadow-lg rounded-lg overflow-hidden relative bg-white">
+        <div className="w-full font-sans bg-white pb-10">
+            {/* Split Comparison Section - Edge to Edge */}
+            <div className="flex flex-row w-full relative">
 
-                {/* VS Badge */}
-                <div className="absolute left-1/2 top-[12rem] -translate-x-1/2 -translate-y-1/2 z-20 hidden md:flex items-center justify-center w-16 h-16 bg-red-600 rounded-full border-4 border-white shadow-md">
-                    <span className="text-white font-extrabold italic text-2xl">VS</span>
-                </div>
-
-                {/* Left Column: PROLOCK */}
-                <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col items-center relative bg-gray-200 border-b border-gray-300 md:border-b-0 md:border-r">
-                    <img src={prolockData.images.nodes[0]?.url || "/prolock.png"} alt={prolockData.title} className="h-68 md:h-80 object-contain mb-8" />
-                    <h2 className="text-3xl font-black uppercase tracking-wider text-center flex items-center justify-center min-h-[4.5rem] leading-tight mb-2">
-                        {prolockData.title}
-                    </h2>
-
-                    {renderPrice(prolockData)}
-
-                    {renderFeatures(prolockData, [
-                        "Standard Size for Easy Storage",
-                        "Fits in Vehicle Glove Box",
-                        "Up to $2000 Guaranteed Rebate"
-                    ])}
-
-                    <div className="mt-auto pt-12 w-full flex justify-center">
-                        <Link
-                            to="/buy-prolock"
-                            className="bg-red-600 text-white font-bold italic px-12 py-3 text-xl rounded shadow hover:bg-red-700 transition-colors uppercase whitespace-nowrap"
-                        >
+                {/* Left Column: PROLOCK (White) */}
+                <div className="w-1/2 flex flex-col items-center bg-white border-r border-[#d1d5db]">
+                    {/* Top Section */}
+                    <div className="h-[200px] md:h-[320px] w-full flex flex-col items-center justify-end pb-4 md:pb-10">
+                        <div className="h-[100px] sm:h-[140px] md:h-[200px] w-full flex items-center justify-center mb-4 md:mb-8 px-4 md:px-8">
+                            <img src={prolockData.images.nodes[0]?.url || "/prolock.png"} alt={prolockData.title} className="max-h-full w-auto object-contain mix-blend-darken" />
+                        </div>
+                        <h2 className="text-lg md:text-3xl lg:text-4xl font-bold uppercase tracking-widest text-[#0f172a] text-center flex items-center justify-center h-12 md:h-20 leading-none">
                             PROLOCK
+                        </h2>
+                    </div>
+
+                    {/* Features List */}
+                    <ul className="w-full list-none p-0 m-0 flex flex-col border-t border-[#d1d5db]">
+                        {featuresProlock.map((feature, idx) => (
+                            <li key={idx} className={`py-4 md:py-6 border-b ${idx === 2 ? 'border-transparent' : 'border-[#d1d5db]'} flex justify-center w-full`}>
+                                <div className="flex items-center w-full max-w-[220px] md:max-w-[420px] px-2 md:px-6">
+                                    <div className="shrink-0 w-6 h-6 md:w-9 md:h-9 rounded-full bg-[#e60000] flex items-center justify-center text-white font-bold text-[11px] md:text-base mr-3 md:mr-6">
+                                        {idx + 1}
+                                    </div>
+                                    <div className="text-sm md:text-xl font-normal text-gray-800 text-left w-full">
+                                        {feature}
+                                    </div>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+
+                    {/* Button */}
+                    <div className="mt-8 md:mt-12 mb-8 md:mb-16 w-full flex justify-center">
+                        <Link to="/prolock">
+                            <button className="bg-[#e60000] text-white font-bold italic px-8 md:px-14 py-2 md:py-4 text-sm md:text-2xl hover:bg-red-700 transition-colors uppercase tracking-wider">
+                                PROLOCK
+                            </button>
                         </Link>
                     </div>
                 </div>
 
-                {/* Right Column: PROLOCK GUARDIAN */}
-                <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col items-center relative bg-gray-400">
-                    <img src={guardianData.images.nodes[0]?.url || "/prolock guardian.png"} alt={guardianData.title} className="h-68 md:h-80 object-contain mb-8" />
-                    <h2 className="text-3xl font-black uppercase tracking-wider text-center flex items-center justify-center min-h-[4.5rem] leading-tight mb-2 text-black">
-                        {guardianData.title}
-                    </h2>
+                {/* Right Column: PROLOCK GUARDIAN (Gray) */}
+                <div className="w-1/2 flex flex-col items-center bg-[#b1b5bb]">
+                    {/* Top Section */}
+                    <div className="h-[200px] md:h-[320px] w-full flex flex-col items-center justify-end pb-4 md:pb-10">
+                        <div className="h-[100px] sm:h-[140px] md:h-[200px] w-full flex items-center justify-center mb-4 md:mb-8 px-4 md:px-8">
+                            <img src={guardianData.images.nodes[0]?.url || "/prolock guardian.png"} alt={guardianData.title} className="max-h-full w-auto object-contain mix-blend-darken" />
+                        </div>
+                        <h2 className="text-lg md:text-3xl lg:text-4xl font-bold uppercase tracking-widest text-[#0f172a] text-center flex flex-col items-center justify-center h-12 md:h-20 leading-tight md:leading-snug">
+                            <span>PROLOCK</span>
+                            <span>GUARDIAN</span>
+                        </h2>
+                    </div>
 
-                    {renderPrice(guardianData)}
+                    {/* Features List */}
+                    <ul className="w-full list-none p-0 m-0 flex flex-col border-t border-[#9ca3af]">
+                        {featuresGuardian.map((feature, idx) => (
+                            <li key={idx} className={`py-4 md:py-6 border-b ${idx === 2 ? 'border-transparent' : 'border-[#9ca3af]'} flex justify-center w-full`}>
+                                <div className="flex items-center w-full max-w-[220px] md:max-w-[420px] px-2 md:px-6">
+                                    <div className="shrink-0 w-6 h-6 md:w-9 md:h-9 rounded-full bg-[#e60000] flex items-center justify-center text-white font-bold text-[11px] md:text-base mr-3 md:mr-6">
+                                        {idx + 1}
+                                    </div>
+                                    <div className="text-sm md:text-xl font-normal text-gray-900 text-left w-full">
+                                        {feature}
+                                    </div>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
 
-                    {renderFeatures(guardianData, [
-                        "Larger Size for Enhanced Deterrence",
-                        "Stored on Floor or Boot",
-                        "Up to $1500 Guaranteed Rebate"
-                    ], true)}
-
-                    <div className="mt-auto pt-12 w-full flex justify-center">
-                        <Link to="/buy-prolock-guardian">
-                            <button className="bg-red-600 text-white font-bold italic px-12 py-3 text-xl rounded shadow hover:bg-red-700 transition-colors uppercase border-2 border-white whitespace-nowrap">
+                    {/* Button */}
+                    <div className="mt-8 md:mt-12 mb-8 md:mb-16 w-full flex justify-center">
+                        <Link to="/prolock-guardian">
+                            <button className="bg-[#e60000] text-white font-bold italic px-8 md:px-14 py-2 md:py-4 text-sm md:text-2xl hover:bg-red-700 transition-colors uppercase tracking-wider border-2 md:border-[3px] border-white">
                                 GUARDIAN
                             </button>
                         </Link>
                     </div>
                 </div>
+
+                {/* Center VS Badge */}
+                <div className="absolute left-1/2 top-[160px] md:top-[280px] -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 md:w-16 md:h-16 bg-[#e60000] rounded-full">
+                    <span className="text-white font-extrabold italic text-sm md:text-2xl font-sans tracking-tighter">VS</span>
+                </div>
             </div>
 
-            {/* Bottom Packaging Section */}
-            <div className="flex flex-col md:flex-row justify-center items-center mt-16 gap-10">
-                <div className="p-6 border border-gray-200 rounded-lg shadow-sm bg-white flex justify-center">
-                    <img src="/img1.png" alt="Prolock Packaging" className="h-80 md:h-96 w-auto object-contain" />
+            {/* Bottom Packaging Images Section */}
+            <div className="flex flex-row justify-center items-center mt-6 md:mt-12 gap-8 md:gap-32 w-full bg-white px-4">
+                <div className="flex justify-center p-2">
+                    <img src="/img1.png" alt="Prolock Packaging" style={{ height: '280px', width: 'auto', maxWidth: '100%' }} className="object-contain drop-shadow-lg transform transition-transform hover:scale-105 rounded-xl border border-gray-100" />
                 </div>
-                <div className="p-6 border border-gray-200 rounded-lg shadow-sm bg-white flex justify-center">
-                    <img src="/img2.png" alt="Prolock Guardian Packaging" className="h-80 md:h-96 w-auto object-contain" />
+                <div className="flex justify-center p-2">
+                    <img src="/img2.png" alt="Prolock Guardian Packaging" style={{ height: '280px', width: 'auto', maxWidth: '100%' }} className="object-contain drop-shadow-lg transform transition-transform hover:scale-105 rounded-xl border border-gray-100" />
                 </div>
             </div>
         </div>

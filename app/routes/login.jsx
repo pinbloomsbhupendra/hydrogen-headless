@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Form, useActionData, useNavigation, useSearchParams } from 'react-router';
 import { redirect, data } from 'react-router';
 import { CUSTOMER_ACCESS_TOKEN_CREATE_MUTATION, CUSTOMER_CREATE_MUTATION } from '~/graphql/customer/mutations';
@@ -95,6 +96,7 @@ export async function action({ context, request }) {
 }
 
 export default function Login() {
+  const [mobileView, setMobileView] = useState('login');
   const actionData = useActionData();
   const navigation = useNavigation();
   const [searchParams] = useSearchParams();
@@ -108,12 +110,12 @@ export default function Login() {
     <div className="min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-112px)] bg-[#b3b3b3] flex flex-col items-center justify-center py-8 px-4">
       <div className="login-container">
         {/* Sign In Section */}
-        <div className="p-10 md:p-16 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-gray-100">
-          <div className="mb-10">
-            <h2 className="text-prolock-red font-black uppercase tracking-[0.3em] text-xs mb-3 italic">
+        <div className={`p-4 sm:p-8 md:p-10 lg:p-16 flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 ${mobileView === 'login' ? 'flex' : 'hidden md:flex'}`}>
+          <div className="mb-6 lg:mb-10">
+            <h2 className="text-prolock-red font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs mb-2 md:mb-3 italic">
               Welcome Back
             </h2>
-            <h1 className="italic-heading text-5xl text-prolock-black-alt">
+            <h1 className="italic-heading text-2xl sm:text-4xl lg:text-5xl text-prolock-black-alt">
               SIGN IN
             </h1>
             <p className="text-gray-500 font-medium tracking-tight">Access your Prolock account</p>
@@ -124,7 +126,7 @@ export default function Login() {
             {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
 
             <div className="space-y-1">
-              <label htmlFor="login-email" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Email</label>
+              <label htmlFor="login-email" className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Email</label>
               <input
                 id="login-email"
                 name="email"
@@ -136,7 +138,7 @@ export default function Login() {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="login-password" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Password</label>
+              <label htmlFor="login-password" className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Password</label>
               <input
                 id="login-password"
                 name="password"
@@ -150,7 +152,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn-form-submit py-5 rounded-xl shadow-black/10 mt-4"
+              className="btn-form-submit py-3 md:py-5 text-sm md:text-base rounded-xl shadow-black/10 mt-2 md:mt-4"
             >
               {isSubmitting ? 'Authenticating...' : 'Sign In'}
             </button>
@@ -169,19 +171,31 @@ export default function Login() {
               <p className="text-green-700 font-bold text-sm">Account created! Please sign in.</p>
             </div>
           )}
+
+          {/* Mobile View Toggle */}
+          <div className="mt-8 text-center md:hidden pb-4">
+            <p className="text-sm text-gray-500 mb-2 font-medium">Don't have an account?</p>
+            <button
+              type="button"
+              onClick={() => setMobileView('signup')}
+              className="text-prolock-red font-bold uppercase tracking-widest text-sm hover:underline"
+            >
+              Create Account
+            </button>
+          </div>
         </div>
 
         {/* Create Account Section */}
-        <div className="join-prolock-section">
+        <div className={`join-prolock-section flex-col justify-center ${mobileView === 'signup' ? 'flex' : 'hidden md:flex'}`}>
           {/* Subtle geometric background decoration */}
           <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-red-600/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-[-10%] left-[-10%] w-64 h-64 bg-red-600/5 rounded-full blur-3xl"></div>
 
-          <div className="mb-10 relative z-10">
-            <h2 className="text-prolock-red font-black uppercase tracking-[0.3em] text-xs mb-3 italic">
+          <div className="mb-6 lg:mb-10 relative z-10">
+            <h2 className="text-prolock-red font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs mb-2 md:mb-3 italic">
               New Member
             </h2>
-            <h1 className="italic-heading text-5xl text-white">
+            <h1 className="italic-heading text-2xl sm:text-4xl lg:text-5xl text-white">
               JOIN PRO<span className="text-prolock-red">LOCK</span>
             </h1>
             <p className="text-white/80 font-medium tracking-tight">Register for exclusive benefits</p>
@@ -191,9 +205,9 @@ export default function Login() {
             <input type="hidden" name="intent" value="signup" />
             {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label htmlFor="signup-firstName" className="text-[10px] font-bold text-white/70 uppercase tracking-widest pl-1">First Name</label>
+                <label htmlFor="signup-firstName" className="text-[10px] md:text-xs font-bold text-white/70 uppercase tracking-widest pl-1">First Name</label>
                 <input
                   id="signup-firstName"
                   name="firstName"
@@ -203,7 +217,7 @@ export default function Login() {
                 />
               </div>
               <div className="space-y-1">
-                <label htmlFor="signup-lastName" className="text-[10px] font-bold text-white/70 uppercase tracking-widest pl-1">Last Name</label>
+                <label htmlFor="signup-lastName" className="text-[10px] md:text-xs font-bold text-white/70 uppercase tracking-widest pl-1">Last</label>
                 <input
                   id="signup-lastName"
                   name="lastName"
@@ -215,7 +229,7 @@ export default function Login() {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="signup-email" className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">Email</label>
+              <label htmlFor="signup-email" className="text-[10px] md:text-xs font-bold text-white/40 uppercase tracking-widest pl-1">Email</label>
               <input
                 id="signup-email"
                 name="email"
@@ -227,7 +241,7 @@ export default function Login() {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="signup-password" className="text-[10px] font-bold text-white/40 uppercase tracking-widest pl-1">Password</label>
+              <label htmlFor="signup-password" className="text-[10px] md:text-xs font-bold text-white/40 uppercase tracking-widest pl-1">Password</label>
               <input
                 id="signup-password"
                 name="password"
@@ -241,7 +255,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn-white mt-4"
+              className="btn-white mt-2 md:mt-4 text-sm md:text-base py-3 md:py-5"
             >
               {isSubmitting ? 'Registering...' : 'Create Account'}
             </button>
@@ -251,6 +265,18 @@ export default function Login() {
             By creating an account, you agree to our <br />
             <a href="/policies/terms-of-service" className="text-white/80 underline hover:text-prolock-red transition-colors">Terms of Service</a> and <a href="/policies/privacy-policy" className="text-white/80 underline hover:text-prolock-red transition-colors">Privacy Policy</a>.
           </p>
+
+          {/* Mobile View Toggle */}
+          <div className="mt-8 text-center md:hidden relative z-10 pb-4">
+            <p className="text-sm text-white/50 mb-2 font-medium">Already have an account?</p>
+            <button
+              type="button"
+              onClick={() => setMobileView('login')}
+              className="text-white font-bold uppercase tracking-widest text-sm hover:text-prolock-red hover:underline transition-colors"
+            >
+              Sign In
+            </button>
+          </div>
         </div>
       </div>
     </div>

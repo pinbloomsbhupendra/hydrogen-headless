@@ -19,8 +19,8 @@ export const Footer = () => {
                         {/* Column 1: Prolock */}
                         <div className="flex flex-col space-y-1.5">
                             <h3 className="text-[17px] font-extrabold mb-1">Prolock</h3>
-                            <Link to="/buy-prolock" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Prolock Original</Link>
-                            <Link to="/buy-prolock-guardian" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Prolock Guardian</Link>
+                            <Link to="/prolock" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Prolock Original</Link>
+                            <Link to="/prolock-guardian" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Prolock Guardian</Link>
                             <Link to="/login" className="hover:text-black transition-colors duration-200 text-sm font-semibold">Account Login</Link>
                         </div>
 

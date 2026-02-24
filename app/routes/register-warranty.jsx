@@ -234,8 +234,8 @@ export default function WarrantyPage() {
     const actionData = useActionData();
 
     return (
-        <div className="bg-[#B2B4B8] min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-112px)] flex flex-col pt-6 md:pt-8">
-            <div className="flex-grow flex flex-col items-center w-full max-w-7xl mx-auto px-4">
+        <div className="bg-[#B2B4B8] flex flex-col pt-6 md:pt-8">
+            <div className="flex flex-col items-center w-full max-w-7xl mx-auto px-4">
                 {/* Header Badge */}
                 <div className="bg-prolock-red border-2 border-white px-6 md:px-8 py-2 md:py-3 mb-4 shadow-sm">
                     <h1 className="text-white text-xl md:text-3xl font-bold italic tracking-wide text-center uppercase">
@@ -259,59 +259,6 @@ export default function WarrantyPage() {
                         initialOrderNumber={orderNumber}
                         initialEmail={email}
                     />
-                </div>
-            </div>
-
-            {/* Red Footer Area — no relative/absolute; content flows naturally */}
-            <div className="w-full bg-prolock-red text-white pt-8 md:pt-10 px-4 shadow-inner">
-                <div className="max-w-6xl mx-auto flex flex-col items-center text-center pb-4">
-                    <p className="text-sm mb-4 font-medium max-w-4xl opacity-90 leading-relaxed px-2">
-                        In the event of your vehicle being stolen with Prolock correctly fitted within one year
-                        of the purchase date (and if your insurance company accepts the claim), we will pay
-                        up to $2000 of your motor vehicle insurance policy excess.
-                    </p>
-                    <p className="text-sm mb-4 font-medium max-w-4xl opacity-90 leading-relaxed px-2">
-                        Simply keep your record of purchase (receipt) in a safe place for one year.<br />
-                        Fill in this registration form and contact Sporting Enterprises in the event of a claim.
-                    </p>
-
-                    <div className="w-full border-t border-dashed border-white/50 my-5"></div>
-
-                    {/* Footer Links and Logo row */}
-                    <div className="w-full flex flex-col md:flex-row justify-between items-start text-left gap-8 px-2 pb-6">
-                        {/* Logo Left */}
-                        <div className="w-full md:w-1/3 pt-1">
-                            <h2 className="text-black font-black italic text-4xl md:text-5xl tracking-tighter logo-text">PROLOCK</h2>
-                        </div>
-
-                        {/* Links Right */}
-                        <div className="w-full md:w-2/3 grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
-                            <ul className="space-y-3">
-                                <li className="font-bold mb-3 text-sm">Prolock</li>
-                                <li><a href="/buy-prolock" className="hover:underline opacity-90">Prolock Original</a></li>
-                                <li><a href="/buy-prolock-guardian" className="hover:underline opacity-90">Prolock Guardian</a></li>
-                                <li><a href="/faq" className="hover:underline opacity-90">All Models</a></li>
-                            </ul>
-                            <ul className="space-y-3">
-                                <li className="font-bold mb-3 text-sm">Information</li>
-                                <li><a href="/policies/privacy-policy" className="hover:underline opacity-90">Privacy Policy</a></li>
-                                <li><a href="/policies/refund-policy" className="hover:underline opacity-90">Refund Policy</a></li>
-                                <li><a href="/policies/shipping-policy" className="hover:underline opacity-90">Shipping Policy</a></li>
-                            </ul>
-                            <ul className="space-y-3 col-span-2 sm:col-span-1">
-                                <li className="font-bold mb-3 text-sm">About</li>
-                                <li><a href="/#about" className="hover:underline opacity-90">About Us</a></li>
-                                <li><a href="/contact" className="hover:underline opacity-90">Contact</a></li>
-                                <li><a href="/policies/terms-of-service" className="hover:underline opacity-90">Terms of Service</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Bottom Bar — static, no absolute positioning */}
-                <div className="w-full bg-[#111111] py-2 px-4 flex flex-col sm:flex-row justify-between items-center gap-1 text-[10px] text-gray-500">
-                    <p>© Prolock Intelligent Security Locks</p>
-                    <p>Prolock is a Sporting Brand</p>
                 </div>
             </div>
         </div>
