@@ -144,7 +144,7 @@ function DashboardSkeleton({ customer }) {
             <div className="max-w-6xl mx-auto">
                 <div className="flex flex-wrap justify-between items-end mb-8 border-b-4 border-gray-200 pb-4 animate-pulse gap-4">
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-black uppercase italic text-gray-200">My Dashboard</h1>
+                        <h1 className="text-2xl md:text-3xl font-black uppercase text-gray-200">My Dashboard</h1>
                         <p className="text-sm font-bold text-gray-300 uppercase mt-1">
                             Welcome back, {customer?.firstName || 'Customer'}
                         </p>

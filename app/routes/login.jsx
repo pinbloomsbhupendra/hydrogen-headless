@@ -112,7 +112,7 @@ export default function Login() {
         {/* Sign In Section */}
         <div className={`p-4 sm:p-8 md:p-10 lg:p-16 flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 ${mobileView === 'login' ? 'flex' : 'hidden md:flex'}`}>
           <div className="mb-6 lg:mb-10">
-            <h2 className="text-prolock-red font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs mb-2 md:mb-3 italic">
+            <h2 className="text-prolock-red font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs mb-2 md:mb-3">
               Welcome Back
             </h2>
             <h1 className="italic-heading text-2xl sm:text-4xl lg:text-5xl text-prolock-black-alt">
@@ -192,7 +192,7 @@ export default function Login() {
           <div className="absolute bottom-[-10%] left-[-10%] w-64 h-64 bg-red-600/5 rounded-full blur-3xl"></div>
 
           <div className="mb-6 lg:mb-10 relative z-10">
-            <h2 className="text-prolock-red font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs mb-2 md:mb-3 italic">
+            <h2 className="text-prolock-red font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs mb-2 md:mb-3">
               New Member
             </h2>
             <h1 className="italic-heading text-2xl sm:text-4xl lg:text-5xl text-white">

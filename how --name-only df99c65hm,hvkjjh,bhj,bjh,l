@@ -1,0 +1,46 @@
+[33mcommit df99c6586b493a329ad205e21c9f20674aef4661[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mswitch[m[33m, [m[1;31morigin/switch[m[33m)[m
+Author: Hemant Jimin <hemantjimin@gmail.com>
+Date:   Tue Feb 24 14:01:59 2026 +0530
+
+    Images All
+
+[1mdiff --git a/public/InterVariable-Italic.woff2 b/public/InterVariable-Italic.woff2[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b3530f3[m
+Binary files /dev/null and b/public/InterVariable-Italic.woff2 differ
+[1mdiff --git a/public/InterVariable.woff2 b/public/InterVariable.woff2[m
+[1mnew file mode 100644[m
+[1mindex 0000000..5a8d3e7[m
+Binary files /dev/null and b/public/InterVariable.woff2 differ
+[1mdiff --git a/public/android-chrome-192x192.png b/public/android-chrome-192x192.png[m
+[1mnew file mode 100644[m
+[1mindex 0000000..59e1eb0[m
+Binary files /dev/null and b/public/android-chrome-192x192.png differ
+[1mdiff --git a/public/android-chrome-512x512.png b/public/android-chrome-512x512.png[m
+[1mnew file mode 100644[m
+[1mindex 0000000..7f1a37f[m
+Binary files /dev/null and b/public/android-chrome-512x512.png differ
+[1mdiff --git a/public/apple-touch-icon.png b/public/apple-touch-icon.png[m
+[1mnew file mode 100644[m
+[1mindex 0000000..655f00e[m
+Binary files /dev/null and b/public/apple-touch-icon.png differ
+[1mdiff --git a/public/favicon_16x16.ico b/public/favicon_16x16.ico[m
+[1mnew file mode 100644[m
+[1mindex 0000000..799e61c[m
+Binary files /dev/null and b/public/favicon_16x16.ico differ
+[1mdiff --git a/public/favicon_32x32.ico b/public/favicon_32x32.ico[m
+[1mnew file mode 100644[m
+[1mindex 0000000..35f6601[m
+Binary files /dev/null and b/public/favicon_32x32.ico differ
+[1mdiff --git a/public/prolock-logo.png b/public/prolock-logo.png[m
+[1mnew file mode 100644[m
+[1mindex 0000000..028e1a0[m
+Binary files /dev/null and b/public/prolock-logo.png differ
+[1mdiff --git a/public/prolock.jpg b/public/prolock.jpg[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4bac8cf[m
+Binary files /dev/null and b/public/prolock.jpg differ
+[1mdiff --git a/public/sperling-logo.png b/public/sperling-logo.png[m
+[1mnew file mode 100644[m
+[1mindex 0000000..c310ffc[m
+Binary files /dev/null and b/public/sperling-logo.png differ

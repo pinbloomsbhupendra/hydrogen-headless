@@ -92,7 +92,7 @@ export default function BuyProLockGuardian() {
             {/* Left Column: Image */}
             <div className="w-full lg:w-1/2 flex items-center justify-center bg-prolock-gray-bg rounded-sm p-6 sm:p-8">
                 <img
-                    src="/img2.png"
+                    src="/Product/img2.png"
                     alt="Prolock Guardian"
                     className="w-full max-w-[340px] lg:max-w-full max-h-[380px] object-contain mx-auto"
                 />

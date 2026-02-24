@@ -29,12 +29,12 @@ const ComparisonTable = ({ prolock, guardian }) => {
 
     const featuresGuardian = [
         <PriceDisplay product={guardianData} />,
-        "Larger Size Stored on Floor or Boot",
+        <span className="whitespace-nowrap tracking-tighter sm:tracking-normal text-[10.5px] sm:text-sm md:text-xl md:tracking-normal">Larger Size Stored on Floor or Boot</span>,
         "Up to $1500 Guaranteed Rebate"
     ];
 
     return (
-        <div className="w-full font-sans bg-white pb-10">
+        <div className="w-full bg-white pb-10">
             {/* Split Comparison Section - Edge to Edge */}
             <div className="flex flex-row w-full relative">
 
@@ -69,7 +69,7 @@ const ComparisonTable = ({ prolock, guardian }) => {
                     {/* Button */}
                     <div className="mt-8 md:mt-12 mb-8 md:mb-16 w-full flex justify-center">
                         <Link to="/prolock">
-                            <button className="bg-[#e60000] text-white font-bold italic px-8 md:px-14 py-2 md:py-4 text-sm md:text-2xl hover:bg-red-700 transition-colors uppercase tracking-wider">
+                            <button className="bg-[#e60000] text-white font-bold px-8 md:px-14 py-2 md:py-4 text-sm md:text-2xl hover:bg-red-700 transition-colors uppercase tracking-wider">
                                 PROLOCK
                             </button>
                         </Link>
@@ -108,7 +108,7 @@ const ComparisonTable = ({ prolock, guardian }) => {
                     {/* Button */}
                     <div className="mt-8 md:mt-12 mb-8 md:mb-16 w-full flex justify-center">
                         <Link to="/prolock-guardian">
-                            <button className="bg-[#e60000] text-white font-bold italic px-8 md:px-14 py-2 md:py-4 text-sm md:text-2xl hover:bg-red-700 transition-colors uppercase tracking-wider border-2 md:border-[3px] border-white">
+                            <button className="bg-[#e60000] text-white font-bold px-8 md:px-14 py-2 md:py-4 text-sm md:text-2xl hover:bg-red-700 transition-colors uppercase tracking-wider border-2 md:border-[3px] border-white">
                                 GUARDIAN
                             </button>
                         </Link>
@@ -117,17 +117,17 @@ const ComparisonTable = ({ prolock, guardian }) => {
 
                 {/* Center VS Badge */}
                 <div className="absolute left-1/2 top-[160px] md:top-[280px] -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 md:w-16 md:h-16 bg-[#e60000] rounded-full">
-                    <span className="text-white font-extrabold italic text-sm md:text-2xl font-sans tracking-tighter">VS</span>
+                    <span className="text-white font-extrabold text-sm md:text-2xl tracking-tighter">VS</span>
                 </div>
             </div>
 
             {/* Bottom Packaging Images Section */}
             <div className="flex flex-row justify-center items-center mt-6 md:mt-12 gap-8 md:gap-32 w-full bg-white px-4">
                 <div className="flex justify-center p-2">
-                    <img src="/img1.png" alt="Prolock Packaging" style={{ height: '280px', width: 'auto', maxWidth: '100%' }} className="object-contain drop-shadow-lg transform transition-transform hover:scale-105 rounded-xl border border-gray-100" />
+                    <img src="/Product/img1.png" alt="Prolock Packaging" style={{ height: '280px', width: 'auto', maxWidth: '100%' }} className="object-contain drop-shadow-lg transform transition-transform hover:scale-105 rounded-xl border border-gray-100" />
                 </div>
                 <div className="flex justify-center p-2">
-                    <img src="/img2.png" alt="Prolock Guardian Packaging" style={{ height: '280px', width: 'auto', maxWidth: '100%' }} className="object-contain drop-shadow-lg transform transition-transform hover:scale-105 rounded-xl border border-gray-100" />
+                    <img src="/Product/img2.png" alt="Prolock Guardian Packaging" style={{ height: '280px', width: 'auto', maxWidth: '100%' }} className="object-contain drop-shadow-lg transform transition-transform hover:scale-105 rounded-xl border border-gray-100" />
                 </div>
             </div>
         </div>

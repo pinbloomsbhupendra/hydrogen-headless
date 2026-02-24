@@ -6,7 +6,7 @@ export default function Hero() {
             {/* Hero Background Image */}
             <div className="w-full h-[260px] sm:h-[340px] md:h-[460px] lg:h-[560px] overflow-hidden">
                 <img
-                    src="/car.png"
+                    src="/Hero/car.png"
                     alt="Car with Prolock security system"
                     className="w-full h-full object-cover object-[center_30%]"
                 />
