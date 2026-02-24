@@ -80,7 +80,7 @@ export default function Cart() {
             {lines.length === 0 ? (
                 <div className="text-center py-20 bg-gray-50 rounded-lg border border-gray-100">
                     <p className="text-xl text-gray-500 mb-6">Your cart is currently empty.</p>
-                    <Link to="/buy-prolock" className="btn-form-submit inline-block w-auto px-8">
+                    <Link to="/prolock" className="btn-form-submit inline-block w-auto px-8">
                         Continue Shopping
                     </Link>
                 </div>
@@ -178,7 +178,7 @@ export default function Cart() {
                         </a>
 
                         <Link
-                            to="/buy-prolock"
+                            to="/prolock"
                             className="block text-center text-sm text-gray-400 mt-4 hover:text-prolock-black underline decoration-gray-300 underline-offset-4 transition-colors"
                         >
                             Continue Shopping

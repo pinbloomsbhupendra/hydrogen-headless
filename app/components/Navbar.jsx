@@ -121,8 +121,8 @@ export default function Header({ cartCount, onCartClick }) {
             </div>
             <ul className="mobile-menu-links">
               <li><Link to="/" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>Home</Link></li>
-              <li><Link to="/buy-prolock" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>Buy Prolock Original</Link></li>
-              <li><Link to="/buy-prolock-guardian" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>Buy Prolock Guardian</Link></li>
+              <li><Link to="/prolock" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>Buy Prolock Original</Link></li>
+              <li><Link to="/prolock-guardian" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>Buy Prolock Guardian</Link></li>
               <li><Link to="/comparison-table" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>Compare</Link></li>
               <li><Link to="/register-warranty" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>Register Warranty</Link></li>
               <li><Link to="/dashboard" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>My Account</Link></li>
