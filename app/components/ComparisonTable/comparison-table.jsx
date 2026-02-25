@@ -29,7 +29,7 @@ const ComparisonTable = ({ prolock, guardian }) => {
 
     const featuresGuardian = [
         <PriceDisplay product={guardianData} />,
-        <span className="whitespace-nowrap tracking-tighter sm:tracking-normal text-[10.5px] sm:text-sm md:text-xl md:tracking-normal">Larger Size Stored on Floor or Boot</span>,
+        "Larger Size Stored on Floor or Boot",
         "Up to $1500 Guaranteed Rebate"
     ];
 
@@ -75,9 +75,9 @@ const ComparisonTable = ({ prolock, guardian }) => {
                     </ul>
 
                     {/* Button */}
-                    <div className="mt-8 md:mt-12 mb-8 md:mb-16 w-full flex justify-center">
+                    <div className="mt-auto pt-8 md:pt-12 mb-8 md:mb-16 w-full flex justify-center">
                         <Link to="/prolock" prefetch="intent">
-                            <button className="bg-[#e60000] text-white font-bold px-8 md:px-14 py-2 md:py-4 text-sm md:text-2xl hover:bg-red-700 transition-colors uppercase tracking-wider">
+                            <button className="bg-[#e60000] text-white font-bold py-2 md:py-4 w-[160px] md:w-[260px] text-sm md:text-2xl hover:bg-red-700 transition-colors uppercase tracking-wider border-2 md:border-[3px] border-[#e60000]">
                                 PROLOCK
                             </button>
                         </Link>
@@ -122,9 +122,9 @@ const ComparisonTable = ({ prolock, guardian }) => {
                     </ul>
 
                     {/* Button */}
-                    <div className="mt-8 md:mt-12 mb-8 md:mb-16 w-full flex justify-center">
+                    <div className="mt-auto pt-8 md:pt-12 mb-8 md:mb-16 w-full flex justify-center">
                         <Link to="/prolock-guardian" prefetch="intent">
-                            <button className="bg-[#e60000] text-white font-bold px-8 md:px-14 py-2 md:py-4 text-sm md:text-2xl hover:bg-red-700 transition-colors uppercase tracking-wider border-2 md:border-[3px] border-white">
+                            <button className="bg-[#e60000] text-white font-bold py-2 md:py-4 w-[160px] md:w-[260px] text-sm md:text-2xl hover:bg-red-700 transition-colors uppercase tracking-wider border-2 md:border-[3px] border-white">
                                 GUARDIAN
                             </button>
                         </Link>
