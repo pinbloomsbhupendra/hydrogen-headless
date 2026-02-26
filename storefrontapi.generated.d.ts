@@ -3,16 +3,6 @@
 /* eslint-disable */
 import type * as StorefrontAPI from '@shopify/hydrogen/storefront-api-types';
 
-export type ProductQueryVariables = StorefrontAPI.Exact<{
-  handle: StorefrontAPI.Scalars['String']['input'];
-}>;
-
-export type ProductQuery = {
-  product?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.Product, 'id' | 'title' | 'handle'>
-  >;
-};
-
 export type ProductImageQueryVariables = StorefrontAPI.Exact<{
   query: StorefrontAPI.Scalars['String']['input'];
 }>;
@@ -56,10 +46,6 @@ export type ProductDetailsQuery = {
 };
 
 interface GeneratedQueryTypes {
-  '#graphql\n  query Product($handle: String!) {\n    product(handle: $handle) {\n      id\n      title\n      handle\n    }\n  }\n': {
-    return: ProductQuery;
-    variables: ProductQueryVariables;
-  };
   '#graphql\n  query ProductImage($query: String!) {\n    products(first: 1, query: $query) {\n      nodes {\n        title\n        featuredImage {\n          url\n          altText\n        }\n      }\n    }\n  }\n': {
     return: ProductImageQuery;
     variables: ProductImageQueryVariables;
